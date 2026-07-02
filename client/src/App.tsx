@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 
 import './App.css'
 
+// CRUD PER LEGGERE I TAVOLI
 interface Tavolo {
   _id: string;
   numero: number;
   posti: number;
   stato: 'libero' | 'occupato' | 'riservato';
   oraArrivo?: string; 
-  
 }
 
 function App() {

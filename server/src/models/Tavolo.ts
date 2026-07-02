@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 // dichiara la forma. La I davanti è una convenzione (sta per Interface)
 
+// CRUD
 interface ITavolo {
   numero: number;
   posti: number;
