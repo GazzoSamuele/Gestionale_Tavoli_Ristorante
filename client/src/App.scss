@@ -45,9 +45,15 @@ $element3: #F3E5C8;
 
 .sala {
   position: relative;
-  height: 80vh;
-  padding: 20px;
+  width: 100%;
+  max-width: 1200px;
+  aspect-ratio: 1200 / 800;   
+  margin: 0 auto;
+  padding: 0;      
   border: 3px dashed black;
+  background-size: 100% 100%; 
+  background-repeat: no-repeat;
+  background-color: $background;
 }
 
 .tavolo-card {

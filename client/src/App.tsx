@@ -24,6 +24,13 @@ Prenotazione[] = [
   { id: 8, nome: 'Chiari',   persone: 12, ora: '21:30' },
 ]
 
+const saleDisponibili = [
+  { nome: 'layout sala 1', img: '/piantine-sale/piantina1.svg' },
+  { nome: 'layout sala 2', img: '/piantine-sale/piantina2.svg' },
+  { nome: 'layout sala 3', img: '/piantine-sale/piantina3.svg' },
+  { nome: 'layout sala 4', img: '/piantine-sale/piantina4.svg' },
+]
+
 // INTERFACCIA TS PER LA VISUALIZZAZIONE DELL'UNITA' "TAVOLO"
 interface Tavolo {
   _id: string;
@@ -70,16 +77,24 @@ function TavoloCard({ tavolo, onDelete, onUpdateStato, onAssing, onMuovi }: Tavo
   {
     if(!dragStart.current.dragging)
       return
-    // quanto ho mosso il mouse in X
-    const dx = e.clientX - dragStart.current.mouseX
 
-     // quanto ho mosso il mouse in Y
-    const dy = e.clientY - dragStart.current.mouseY
+    // trova il contenitore sala
+     const sala = e.currentTarget.closest('.sala')
+      if (!sala) 
+        return
+
+    // le sue dimensioni attuali in px 
+      const rect = sala.getBoundingClientRect() 
+
+    // converti lo spostamento del mouse (px) in percentuale della sala
+    const dxPct = (e.clientX - dragStart.current.mouseX) / rect.width * 100
+
+    const dyPct = (e.clientY - dragStart.current.mouseY) / rect.height * 100
 
     setPos({ 
       // nuova pos = origine + spostamento
-      x: dragStart.current.posX + dx, 
-      y: dragStart.current.posY + dy
+      x: dragStart.current.posX + dxPct, 
+      y: dragStart.current.posY + dyPct 
     })
   }
 
@@ -93,7 +108,7 @@ function TavoloCard({ tavolo, onDelete, onUpdateStato, onAssing, onMuovi }: Tavo
   }
 
   return (
-    <div className={`tavolo-card tavolo-${tavolo.stato}`} style={{ left: pos.x, top: pos.y }} onClick={() => onAssing(tavolo)}>
+    <div className={`tavolo-card tavolo-${tavolo.stato}`} style={{ left: `${pos.x}%`, top: `${pos.y}%` }} onClick={() => onAssing(tavolo)}>
          <h2
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
@@ -124,6 +139,8 @@ function App() {
 
   const [prenotazioni, setPrenotazioni] = useState<Prenotazione[]>(prenotazioniFinte)
   const [prenotazioneSelezionata, setPrenotazioneSelezionata] = useState<Prenotazione | null>(null)
+
+  const [salaSfondo, setSalaSfondo] = useState(saleDisponibili[0].img)
 
   useEffect(() => {
   fetch('http://localhost:3000/api/tavoli')
@@ -267,8 +284,12 @@ const handleMuovi =  async (id: string, posX: number, posY: number) => {
         </div>
     ))}
   </div>
-
-      <section className='sala'>
+    <select value={salaSfondo} onChange={(e) => setSalaSfondo(e.target.value)}>
+      {saleDisponibili.map((sala) => (
+        <option key={sala.img} value={sala.img}>{sala.nome}</option>
+      ))}
+    </select>
+      <section className='sala' style={{ backgroundImage: `url(${salaSfondo})` }}>
         {/* <p>ecco i tavoli</p> */}
         {tavoli.map((tavolo) => (
           <TavoloCard
