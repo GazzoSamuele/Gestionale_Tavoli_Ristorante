@@ -1,4 +1,6 @@
 import { useState, useEffect, type SubmitEvent } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
 import './App.scss'
 
@@ -147,8 +149,9 @@ const handleAssegna = (tavolo: Tavolo) => {
 
   return (
     <>
-      <div>
-        <h1>Gestione Tavoli Ristorante</h1>
+    <main className='alg-elements'>
+      <div className='status-tavoli'>
+        {/* <h1>Gestione Tavoli Ristorante</h1> */}
           <p>Tavoli Totali: {tavoli.length}</p>
           <p>Tavoli Liberi: {tavoli.filter(t => t.stato === 'libero').length}</p>
           <p>Tavoli Occupati: {tavoli.filter(t => t.stato === 'occupato').length}</p>
@@ -157,7 +160,8 @@ const handleAssegna = (tavolo: Tavolo) => {
       {tavoli.length === 0 && <p>nessun tavolo disponibile, creane uno nuovo</p>}
 
        {/* FORM PER L'AGGIUNTA DI UN NUOVO TAVOLO */}
-      <form onSubmit={handleSubmit}>
+      <form className='panel-aggiungi-tavolo' onSubmit={handleSubmit}>
+        <FontAwesomeIcon icon={faPlus} />
         <label>Numero Del Tavolo
           <input
             type="number"
@@ -182,8 +186,8 @@ const handleAssegna = (tavolo: Tavolo) => {
       <button type="submit">Aggiungi tavolo</button>
     </form>
 
-    <aside className="pannello-prenotazioni">
-      <h2>Prenotazioni</h2>
+    <div className="pannello-prenotazioni">
+      {/* <h2>Prenotazioni</h2> */}
         {prenotazioni.map((pren) => (
           <div
             key={pren.id}
@@ -197,10 +201,10 @@ const handleAssegna = (tavolo: Tavolo) => {
           </div>
         </div>
     ))}
-  </aside>
+  </div>
 
       <section className='sala'>
-        <p>ecco i tavoli</p>
+        {/* <p>ecco i tavoli</p> */}
         {tavoli.map((tavolo) => (
           <TavoloCard
             key={tavolo._id}
@@ -211,6 +215,7 @@ const handleAssegna = (tavolo: Tavolo) => {
           />
         ))}
       </section>
+    </main>
     </>
   )
 }

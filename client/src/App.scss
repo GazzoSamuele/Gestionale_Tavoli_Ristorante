@@ -1,24 +1,60 @@
-$verde:  #b6f0c0;
-$rosso:  #f5b0b0;
-$giallo: #f5e5a0;
+// COLORI PRINCIPALI
+$verde:  #00c922;
+$rosso:  #d40000;
+$giallo: #ffd000;
+$background: #492D1C; 
+$element1: #8A8D57;  
+$element2: #EB9C4C;
+$element3: #F3E5C8;
+// EFFETTI E DISTANZIAMENTI
 
-// .sala {
-//   position: relative;  
-//   min-height: 600px;
-//   border: 2px dashed #ccc;
-//   padding: 0;           
-//   margin-top: 20px;
-// }
+#root {
+    width: 90%;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.alg-elements{
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+}
+
+.status-tavoli{
+     display: flex;
+    justify-content: flex-end;
+    gap: 100px;
+    background-color: $element1;
+    padding: 15px;
+    border-radius: 15px;
+}
+.panel-aggiungi-tavolo{
+    position: fixed;
+    right: 35px;
+    display: none;
+    // display: flex;
+    flex-direction: column;
+    top: 100px;
+    width: 20%;
+    gap: 60px;
+    background-color: aquamarine;
+}
 
 .sala {
+  position: relative;
+  height: 80vh;
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
   padding: 20px;
+  border: 3px dashed black;
 }
 
 .tavolo-card {
-  // position: absolute;  
+  position: absolute;  
   width: 180px;
   padding: 16px;
   border-radius: 12px;
@@ -32,6 +68,15 @@ $giallo: #f5e5a0;
   &.tavolo-libero    { background-color: $verde; }
   &.tavolo-occupato  { background-color: $rosso; }
   &.tavolo-riservato { background-color: $giallo; }
+}
+
+.pannello-prenotazioni{
+    position: fixed;
+    bottom: 10px;
+    display: flex;
+    width: 90%;
+    justify-content: space-between;
+    flex-wrap: wrap;
 }
 
 .prenotazione-card {
