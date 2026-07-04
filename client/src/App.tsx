@@ -1,4 +1,4 @@
-import { useState, useEffect, type SubmitEvent } from 'react';
+import { useState, useEffect, useRef, type SubmitEvent, type PointerEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
@@ -41,22 +41,78 @@ interface TavoloCardProps {
   onDelete: (id: string) => void;
   onUpdateStato: (id: string, nuovoStato: string) => void;
   onAssing: (tavolo: Tavolo) => void;
+  onMuovi: (id: string, posX: number, posY: number) => void;
 }
 
-function TavoloCard({ tavolo, onDelete, onUpdateStato, onAssing }: TavoloCardProps) {
+function TavoloCard({ tavolo, onDelete, onUpdateStato, onAssing, onMuovi }: TavoloCardProps) {
+
+  // la posizione attuale della carta (parte da quella salvata nel DB)
+  const [pos, setPos] = useState({ x: tavolo.posX, y: tavolo.posY})
+
+  // "scatola" che ricorda da dove è partito il drag (non causa ridisegni)
+  const dragStart = useRef({ mouseX: 0, mouseY: 0, posX: 0, posY: 0, dragging: false})
+
+  const handlePointerDown = (e: PointerEvent<HTMLElement>) => 
+    {
+      dragStart.current = { 
+        mouseX: e.clientX, 
+        mouseY: e.clientY,
+        posX: pos.x,
+        posY: pos.y,
+        dragging: true
+      }
+
+      // "aggancia" il puntatore alla maniglia
+      e.currentTarget.setPointerCapture(e.pointerId)
+  }
+
+  const handlePointerMove = (e: PointerEvent<HTMLElement>) =>
+  {
+    if(!dragStart.current.dragging)
+      return
+    // quanto ho mosso il mouse in X
+    const dx = e.clientX - dragStart.current.mouseX
+
+     // quanto ho mosso il mouse in Y
+    const dy = e.clientY - dragStart.current.mouseY
+
+    setPos({ 
+      // nuova pos = origine + spostamento
+      x: dragStart.current.posX + dx, 
+      y: dragStart.current.posY + dy
+    })
+  }
+
+  const handlePointerUp = (e: PointerEvent<HTMLElement>) => 
+  {
+    if(!dragStart.current.dragging)
+      return
+    dragStart.current.dragging = false
+    e.currentTarget.releasePointerCapture(e.pointerId)
+    onMuovi(tavolo._id, pos.x, pos.y)
+  }
 
   return (
-    <div className={`tavolo-card tavolo-${tavolo.stato}`} onClick={() => onAssing(tavolo)}>
-        <h2>Tavolo {tavolo.numero}</h2>
-        <p>{tavolo.posti} posti</p>
-        <p>{tavolo.stato}</p>
-      
-        <select value={tavolo.stato} onChange={(e) => onUpdateStato(tavolo._id, e.target.value)}>
-          <option value="libero">Libero</option>
-          <option value="occupato">Occupato</option>
-          <option value="riservato">Riservato</option>
-        </select>
-        <button onClick={() => onDelete(tavolo._id)}>Elimina</button>
+    <div className={`tavolo-card tavolo-${tavolo.stato}`} style={{ left: pos.x, top: pos.y }} onClick={() => onAssing(tavolo)}>
+         <h2
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onClick={(e) => e.stopPropagation()}
+            style={{ cursor: 'grab' }}
+          >
+            Tavolo {tavolo.numero}
+        </h2>
+
+      <p>{tavolo.posti} posti</p>
+      <p>{tavolo.stato}</p>
+
+      <select value={tavolo.stato} onClick={(e) => e.stopPropagation()} onChange={(e) => onUpdateStato(tavolo._id, e.target.value)}>
+        <option value="libero">Libero</option>
+        <option value="occupato">Occupato</option>
+        <option value="riservato">Riservato</option>
+      </select>
+      <button onClick={(e) => { e.stopPropagation(); onDelete(tavolo._id) }}>Elimina</button>
     </div>
   )
 }
@@ -145,7 +201,16 @@ const handleAssegna = (tavolo: Tavolo) => {
    // deseleziona
   setPrenotazioneSelezionata(null)
 }
-  
+
+// SEZIONE SPOSATAMENTO TAVOLI
+
+const handleMuovi =  async (id: string, posX: number, posY: number) => {
+  await fetch(`http://localhost:3000/api/tavoli/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ posX, posY })
+  })
+}
 
   return (
     <>
@@ -212,6 +277,7 @@ const handleAssegna = (tavolo: Tavolo) => {
             onDelete={handleDelete}
             onUpdateStato={handleUpdate}
             onAssing={handleAssegna}
+            onMuovi={handleMuovi}
           />
         ))}
       </section>

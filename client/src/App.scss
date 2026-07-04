@@ -34,21 +34,18 @@ $element3: #F3E5C8;
 .panel-aggiungi-tavolo{
     position: fixed;
     right: 35px;
-    display: none;
-    // display: flex;
+    display: flex;
     flex-direction: column;
     top: 100px;
     width: 20%;
     gap: 60px;
     background-color: aquamarine;
+    z-index: 10;
 }
 
 .sala {
   position: relative;
   height: 80vh;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
   padding: 20px;
   border: 3px dashed black;
 }
