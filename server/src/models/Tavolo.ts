@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
 
 // dichiara la forma. La I davanti è una convenzione (sta per Interface)
-
-// CRUD
 interface ITavolo {
-  numero: number;
-  posti: number;
-  stato: 'libero' | 'occupato' | 'riservato';
-  oraArrivo?: Date; 
-  
+    numero: number;
+    posti: number;
+    stato: 'libero' | 'occupato' | 'riservato';
+    oraArrivo?: Date;
+    
+    posX: number;
+    posY: number;
 }
 
 const tavoloSchema = new mongoose.Schema<ITavolo>({
@@ -20,7 +20,10 @@ const tavoloSchema = new mongoose.Schema<ITavolo>({
         default: 'libero',
         required: true
     },
-    oraArrivo: { type: Date }
+    oraArrivo: { type: Date },
+
+    posX: { type: Number, default: 0 },
+    posY: { type: Number, default: 0 }
 });
 
 const Tavolo = mongoose.model<ITavolo>('Tavolo', tavoloSchema);
