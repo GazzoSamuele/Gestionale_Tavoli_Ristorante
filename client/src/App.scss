@@ -1,3 +1,10 @@
+@import url('https://googleapis.com');
+
+body {
+  font-family: 'Manrope', sans-serif;
+}
+
+
 // COLORI PRINCIPALI
 $verde:  #00c922;
 $rosso:  #d40000;
@@ -6,6 +13,7 @@ $background: #492D1C;
 $element1: #8A8D57;  
 $element2: #EB9C4C;
 $element3: #F3E5C8;
+
 // EFFETTI E DISTANZIAMENTI
 
 // #root {
@@ -45,8 +53,11 @@ aside{
   gap: 16px;
   overflow-y: auto;
 }
+.panel-prenotazioni-confermate{
+  background-color: $element2;
+}
 
-.toggle-form {
+.toggle-panel-edit {
   width: 48px;
   height: 48px;
   border: none;
@@ -58,15 +69,8 @@ aside{
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.panel-edit {
-  width: 280px; 
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  background-color: $element3;      
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-  color: $background;                
+.toggle-panel-bookings {
+  background-color: $element1;                     
 }
 
 label {
@@ -102,7 +106,7 @@ button {
   position: relative;
   height: 100%;  
   padding: 0;      
-  border: 3px dashed black;
+  // border: 3px dashed black;
   background-size: 100% 100%; 
   background-repeat: no-repeat;
   background-color: $background;
@@ -123,6 +127,11 @@ button {
   &.tavolo-libero    { background-color: $verde; }
   &.tavolo-occupato  { background-color: $rosso; }
   &.tavolo-riservato { background-color: $giallo; }
+
+  &.evidenziato { 
+    outline: 4px solid gold;
+    box-shadow: 0 0 20px 4px gold;    
+  }
 }
 
 .pannello-prenotazioni {

@@ -4,24 +4,28 @@ import { faPlus, faXmark } from '@fortawesome/free-solid-svg-icons'
 
 import './App.scss'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
 // INTERFACCIA TS PER LA VISUALIZZAZIONE DELL'UNITA' "PRENOTAZIONE"
 interface Prenotazione {
   id: number;
   nome: string;
   persone: number;
   ora: string;
+  telefono: string;
+  tavoloId?: string;
 }
 
 const prenotazioniFinte: 
 Prenotazione[] = [
-  { id: 1, nome: 'Rossi',   persone: 4, ora: '22:00' },
-  { id: 2, nome: 'Bianchi', persone: 2, ora: '19:30' },
-  { id: 3, nome: 'Verdi',   persone: 6, ora: '19:00' },
-  { id: 4, nome: 'Gialli',   persone: 2, ora: '20:15' },
-  { id: 5, nome: 'Blu', persone: 1, ora: '20:45' },
-  { id: 6, nome: 'Viola',   persone: 8, ora: '21:00' },
-  { id: 7, nome: 'Scuri', persone: 8, ora: '20:30' },
-  { id: 8, nome: 'Chiari',   persone: 12, ora: '21:30' },
+  { id: 1, nome: 'Rossi',   persone: 4, ora: '22:00', telefono: '393312650471' },
+  { id: 2, nome: 'Bianchi', persone: 2, ora: '19:30', telefono: '393312650471' },
+  { id: 3, nome: 'Verdi',   persone: 6, ora: '19:00', telefono: '393312650471' },
+  { id: 4, nome: 'Gialli',   persone: 2, ora: '20:15', telefono: '393312650471' },
+  { id: 5, nome: 'Blu', persone: 1, ora: '20:45', telefono: '393312650471' },
+  { id: 6, nome: 'Viola',   persone: 8, ora: '21:00', telefono: '393312650471' },
+  { id: 7, nome: 'Scuri', persone: 8, ora: '20:30', telefono: '393312650471' },
+  { id: 8, nome: 'Chiari',   persone: 12, ora: '21:30', telefono: '393312650471' },
 ]
 
 const saleDisponibili = [
@@ -49,9 +53,10 @@ interface TavoloCardProps {
   onUpdateStato: (id: string, nuovoStato: string) => void;
   onAssign: (tavolo: Tavolo) => void;
   onMuovi: (id: string, posX: number, posY: number) => void;
+  evidenziato: boolean;
 }
 
-function TavoloCard({ tavolo, onDelete, onUpdateStato, onAssign, onMuovi }: TavoloCardProps) {
+function TavoloCard({ tavolo, onDelete, onUpdateStato, onAssign, onMuovi, evidenziato }: TavoloCardProps) {
 
   // la posizione attuale della carta (parte da quella salvata nel DB)
   const [pos, setPos] = useState({ x: tavolo.posX, y: tavolo.posY})
@@ -108,7 +113,10 @@ function TavoloCard({ tavolo, onDelete, onUpdateStato, onAssign, onMuovi }: Tavo
   }
 
   return (
-    <div className={`tavolo-card tavolo-${tavolo.stato}`} style={{ left: `${pos.x}%`, top: `${pos.y}%` }} onClick={() => onAssign(tavolo)}>
+    <div 
+      className={`tavolo-card tavolo-${tavolo.stato} ${evidenziato ? 'evidenziato' : ''}`} 
+      style={{ left: `${pos.x}%`, top: `${pos.y}%` }} 
+      onClick={() => onAssign(tavolo)}>
          <h2
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
@@ -142,24 +150,29 @@ function App() {
 
   const [salaSfondo, setSalaSfondo] = useState(saleDisponibili[0].img)
 
-  const [formAperto, setFormAperto] = useState(false)
+  const [panelEdit, setpanelEdit] = useState(false)
+  const [panelReservations, setpanelReservations] = useState(false)
+
+  const [prenotazioniConfermate, setPrenotazioniConfermate] = useState<Prenotazione[]>([])
+
+  const [tavoloEvidenziato, setTavoloEvidenziato] = useState<string | null>(null)
+
+  const [prenotazioniInviate, setPrenotazioniInviate] = useState<number[]>([])
 
   useEffect(() => {
-  fetch('http://localhost:3000/api/tavoli')
+  fetch(`${API_URL}/api/tavoli`)
     .then(res => res.json())
     .then(data => setTavoli(data))
     .catch(err => console.error(err))
 }, [])
 
-// SEZIONE TAVOLI
-
-// RICHIAMO OPERAZIONI CRUD 
+// SEZIONE TAVOLI (RICHIAMO OPERAZIONI CRUD)
 
 // AGGIUNGI 
 const handleSubmit = async (e: SubmitEvent) => {
   e.preventDefault()
 
-  const res = await fetch('http://localhost:3000/api/tavoli', {
+  const res = await fetch(`${API_URL}/api/tavoli`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json'},
     body: JSON.stringify({ numero: Number(numero), posti: Number(posti)})
@@ -178,7 +191,7 @@ const handleSubmit = async (e: SubmitEvent) => {
 // CANCELLA
 const handleDelete = async (id: string) => {
   const res = await
-    fetch(`http://localhost:3000/api/tavoli/${id}`, {
+    fetch(`${API_URL}/api/tavoli/${id}`, {
       method: 'DELETE'
     })
     if(!res.ok) {
@@ -190,7 +203,7 @@ const handleDelete = async (id: string) => {
 
 // MODIFICA
 const handleUpdate = async (id: string, nuovoStato: string) => {
-  const res = await fetch(`http://localhost:3000/api/tavoli/${id}`, {
+  const res = await fetch(`${API_URL}/api/tavoli/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json'},
     body: JSON.stringify({ stato: nuovoStato })
@@ -217,6 +230,9 @@ const handleAssegna = (tavolo: Tavolo) => {
   // togli la prenotazione assegnata
   setPrenotazioni(prenotazioni.filter((p) => p.id !== prenotazioneSelezionata.id))
 
+  // spostamento delle prenotazioni confermate
+  setPrenotazioniConfermate([...prenotazioniConfermate, {...prenotazioneSelezionata, tavoloId: tavolo._id }])
+
    // deseleziona
   setPrenotazioneSelezionata(null)
 }
@@ -224,11 +240,27 @@ const handleAssegna = (tavolo: Tavolo) => {
 // SEZIONE SPOSATAMENTO TAVOLI
 
 const handleMuovi =  async (id: string, posX: number, posY: number) => {
-  await fetch(`http://localhost:3000/api/tavoli/${id}`, {
+  await fetch(`${API_URL}/api/tavoli/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ posX, posY })
   })
+}
+
+// FUNZIONE CHE INVIA IL MESSAGGIO SU WHATSAPP ALLA PRENOTAZIONE CONFERMATA
+
+const inviaWhatsApp = (pren: Prenotazione) => {
+  const messaggio = 
+  `Ciao ${pren.nome}, la tua prenotazione per ${pren.persone} persone alle ${pren.ora} è confermata! 🍽️`
+
+  const url = 
+  // "codifica" il messaggio per l'URL senza spazi, emoji o accenti
+  `https://wa.me/${pren.telefono}?text=${encodeURIComponent(messaggio)}`
+  
+  window.open(url, '_blank')
+
+  // MESSAGGIO NELLE PRENOTAZIONI CONFERMATE CHE INDICA L'INVIO DEL MESSAGGIO SU WHATSAPP AL CLIENTE
+  setPrenotazioniInviate([...prenotazioniInviate, pren.id])
 }
 
   return (
@@ -245,6 +277,7 @@ const handleMuovi =  async (id: string, posX: number, posY: number) => {
             onUpdateStato={handleUpdate}
             onAssign={handleAssegna}
             onMuovi={handleMuovi}
+            evidenziato={tavolo._id === tavoloEvidenziato}
           />
         ))}
       </section>
@@ -252,12 +285,12 @@ const handleMuovi =  async (id: string, posX: number, posY: number) => {
 
     {/* PANNELLO DI EDIT GENERALE */}
       <aside>
-        <button className="toggle-form" onClick={() => setFormAperto(!formAperto)}>
-          <FontAwesomeIcon icon={formAperto ? faXmark : faPlus} />
+        <button className="toggle-panel-edit" onClick={() => setpanelEdit(!panelEdit)}>
+          <FontAwesomeIcon icon={panelEdit ? faXmark : faPlus} />
         </button>
         
         {/* FORM PER L'AGGIUNTA DI UN NUOVO TAVOLO */}
-        {formAperto && (
+        {panelEdit && (
           <>
           <div className='status-tavoli'>
             {/* <h1>Gestione Tavoli Ristorante</h1> */}
@@ -309,6 +342,34 @@ const handleMuovi =  async (id: string, posX: number, posY: number) => {
                   <strong>{pren.nome}</strong>
                   <p>{pren.persone} persone</p>
                   <p>ore {pren.ora}</p>
+
+                  <button onClick={(e) => { e.stopPropagation(); inviaWhatsApp(pren) }}>Conferma via WhatsApp</button>
+                </div>
+            ))}
+          </div>
+          </>
+        )} 
+      </aside>     
+
+    {/* PANNELLO PER LA VISUALIZZAZIONE DI TUTTE LE PRENOTAZIONI CONFERMATE */}
+      <aside className='panel-prenotazioni-confermate'>
+        <button className="toggle-panel-edit toggle-panel-bookings" onClick={() => setpanelReservations(!panelReservations)}>
+          <FontAwesomeIcon icon={panelReservations ? faXmark : faPlus} />
+        </button>
+      
+        {panelReservations && (
+          <>
+          <div className="pannello-prenotazioni">
+              {prenotazioniConfermate.slice(0, 4).map((pren) => (
+                <div
+                      onClick={() => setTavoloEvidenziato(pren.tavoloId ?? null)}
+                  // className={`prenotazione-card ${prenotazioneSelezionata?.id === pren.id ? 'selezionata' : ''}`}
+                >
+                  <strong>{pren.nome}</strong>
+                  <p>{pren.persone} persone</p>
+                  <p>ore {pren.ora}</p>
+
+                  {prenotazioniInviate.includes(pren.id) && <p>✅ WhatsApp inviato correttamente</p>}
                 </div>
             ))}
           </div>

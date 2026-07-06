@@ -24,8 +24,8 @@ app.use(express.json())
 // tutte le rotte del tavoliRouter partono da /api/tavoli
 app.use('/api/tavoli', tavoliRouter)
 
-
-const PORT = 3000;
+// Render (e ogni hosting) assegna la porta tramite process.env.PORT. Con || 3000, in locale usa 3000, online usa quella di Render.
+const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {    
   res.send('benvenuti sul mio gestionale di tavoli')
