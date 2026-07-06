@@ -8,47 +8,99 @@ $element2: #EB9C4C;
 $element3: #F3E5C8;
 // EFFETTI E DISTANZIAMENTI
 
-#root {
-    width: 90%;
-    margin: 0 auto;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-}
+// #root {
+//   width: 90%;
+//   margin: 0 auto;
+//   text-align: center;
+//   display: flex;
+//   flex-direction: column;
+//   box-sizing: border-box;
+// }
 
-.alg-elements{
-    display: flex;
-    flex-direction: column;
-    height: 80vh;
+.layout-sala {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  height: 100vh;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
 .status-tavoli{
-     display: flex;
-    justify-content: flex-end;
-    gap: 100px;
-    background-color: $element1;
-    padding: 15px;
-    border-radius: 15px;
-}
-.panel-aggiungi-tavolo{
-    position: fixed;
-    right: 35px;
-    display: flex;
-    flex-direction: column;
-    top: 100px;
-    width: 20%;
-    gap: 60px;
-    background-color: aquamarine;
-    z-index: 10;
+  display: flex;
+  justify-content: flex-end;
+  gap: 100px;
+  background-color: $element1;
+  padding: 15px;
+  border-radius: 15px;
 }
 
-.sala {
+aside{
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  background-color: $element1;
+  border-radius: 10px;
+  padding: 15px;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+.toggle-form {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background-color: $element2;
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.panel-edit {
+  width: 280px; 
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: $element3;      
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  color: $background;                
+}
+
+label {
+  display: flex;
+  flex-direction: column;         
+  gap: 6px;
+  font-weight: 600;
+  text-align: left;
+}
+
+input {
+  padding: 8px 10px;
+  border: 2px solid $element1;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+button {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background-color: $element2;      
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover { opacity: 0.9; }
+}
+
+.sala { 
+  flex: 1;     
   position: relative;
-  width: 100%;
-  max-width: 1200px;
-  aspect-ratio: 1200 / 800;   
-  margin: 0 auto;
+  height: 100%;  
   padding: 0;      
   border: 3px dashed black;
   background-size: 100% 100%; 
@@ -73,13 +125,10 @@ $element3: #F3E5C8;
   &.tavolo-riservato { background-color: $giallo; }
 }
 
-.pannello-prenotazioni{
-    position: fixed;
-    bottom: 10px;
-    display: flex;
-    width: 90%;
-    justify-content: space-between;
-    flex-wrap: wrap;
+.pannello-prenotazioni {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .prenotazione-card {
@@ -93,5 +142,28 @@ $element3: #F3E5C8;
     outline: 3px solid #4a90d9; 
     background-color: gold;
     opacity: 0.75; 
+  }
+}
+
+
+
+
+
+
+// RESPONSIVE
+
+@media (max-width: 768px) {
+  .sala {
+    background-image: none !important; 
+    aspect-ratio: auto;                 
+    height: auto;
+    display: flex;                       
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    padding: 12px;
+  }
+  .tavolo-card {
+    position: static;                
   }
 }

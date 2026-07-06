@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, type SubmitEvent, type PointerEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faXmark } from '@fortawesome/free-solid-svg-icons'
 
 import './App.scss'
 
@@ -47,11 +47,11 @@ interface TavoloCardProps {
   tavolo: Tavolo;
   onDelete: (id: string) => void;
   onUpdateStato: (id: string, nuovoStato: string) => void;
-  onAssing: (tavolo: Tavolo) => void;
+  onAssign: (tavolo: Tavolo) => void;
   onMuovi: (id: string, posX: number, posY: number) => void;
 }
 
-function TavoloCard({ tavolo, onDelete, onUpdateStato, onAssing, onMuovi }: TavoloCardProps) {
+function TavoloCard({ tavolo, onDelete, onUpdateStato, onAssign, onMuovi }: TavoloCardProps) {
 
   // la posizione attuale della carta (parte da quella salvata nel DB)
   const [pos, setPos] = useState({ x: tavolo.posX, y: tavolo.posY})
@@ -108,7 +108,7 @@ function TavoloCard({ tavolo, onDelete, onUpdateStato, onAssing, onMuovi }: Tavo
   }
 
   return (
-    <div className={`tavolo-card tavolo-${tavolo.stato}`} style={{ left: `${pos.x}%`, top: `${pos.y}%` }} onClick={() => onAssing(tavolo)}>
+    <div className={`tavolo-card tavolo-${tavolo.stato}`} style={{ left: `${pos.x}%`, top: `${pos.y}%` }} onClick={() => onAssign(tavolo)}>
          <h2
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
@@ -141,6 +141,8 @@ function App() {
   const [prenotazioneSelezionata, setPrenotazioneSelezionata] = useState<Prenotazione | null>(null)
 
   const [salaSfondo, setSalaSfondo] = useState(saleDisponibili[0].img)
+
+  const [formAperto, setFormAperto] = useState(false)
 
   useEffect(() => {
   fetch('http://localhost:3000/api/tavoli')
@@ -231,64 +233,8 @@ const handleMuovi =  async (id: string, posX: number, posY: number) => {
 
   return (
     <>
-    <main className='alg-elements'>
-      <div className='status-tavoli'>
-        {/* <h1>Gestione Tavoli Ristorante</h1> */}
-          <p>Tavoli Totali: {tavoli.length}</p>
-          <p>Tavoli Liberi: {tavoli.filter(t => t.stato === 'libero').length}</p>
-          <p>Tavoli Occupati: {tavoli.filter(t => t.stato === 'occupato').length}</p>
-      </div>
+    <main className='layout-sala'>
 
-      {tavoli.length === 0 && <p>nessun tavolo disponibile, creane uno nuovo</p>}
-
-       {/* FORM PER L'AGGIUNTA DI UN NUOVO TAVOLO */}
-      <form className='panel-aggiungi-tavolo' onSubmit={handleSubmit}>
-        <FontAwesomeIcon icon={faPlus} />
-        <label>Numero Del Tavolo
-          <input
-            type="number"
-            placeholder="Numero Del Tavolo"
-            value={numero}
-            onChange={(e) => setNumero(e.target.value)}
-            required
-            min="1"
-          />
-        </label>
-
-        <label>Posti max disponibili
-          <input
-            type="number"
-            placeholder="Posti"
-            value={posti}
-            onChange={(e) => setPosti(e.target.value)}
-            required
-            min="1"
-          />
-        </label>
-      <button type="submit">Aggiungi tavolo</button>
-    </form>
-
-    <div className="pannello-prenotazioni">
-      {/* <h2>Prenotazioni</h2> */}
-        {prenotazioni.map((pren) => (
-          <div
-            key={pren.id}
-            className={`prenotazione-card ${prenotazioneSelezionata?.id === pren.id ? 'selezionata' : ''}`}
-            onClick={() => setPrenotazioneSelezionata(pren)}
-          >
-          <div key={pren.id} className="prenotazione-card">
-            <strong>{pren.nome}</strong>
-              <p>{pren.persone} persone</p>
-              <p>ore {pren.ora}</p>
-          </div>
-        </div>
-    ))}
-  </div>
-    <select value={salaSfondo} onChange={(e) => setSalaSfondo(e.target.value)}>
-      {saleDisponibili.map((sala) => (
-        <option key={sala.img} value={sala.img}>{sala.nome}</option>
-      ))}
-    </select>
       <section className='sala' style={{ backgroundImage: `url(${salaSfondo})` }}>
         {/* <p>ecco i tavoli</p> */}
         {tavoli.map((tavolo) => (
@@ -297,11 +243,78 @@ const handleMuovi =  async (id: string, posX: number, posY: number) => {
             tavolo={tavolo}
             onDelete={handleDelete}
             onUpdateStato={handleUpdate}
-            onAssing={handleAssegna}
+            onAssign={handleAssegna}
             onMuovi={handleMuovi}
           />
         ))}
       </section>
+
+
+    {/* PANNELLO DI EDIT GENERALE */}
+      <aside>
+        <button className="toggle-form" onClick={() => setFormAperto(!formAperto)}>
+          <FontAwesomeIcon icon={formAperto ? faXmark : faPlus} />
+        </button>
+        
+        {/* FORM PER L'AGGIUNTA DI UN NUOVO TAVOLO */}
+        {formAperto && (
+          <>
+          <div className='status-tavoli'>
+            {/* <h1>Gestione Tavoli Ristorante</h1> */}
+              <p>Tavoli Totali: {tavoli.length}</p>
+              <p>Tavoli Liberi: {tavoli.filter(t => t.stato === 'libero').length}</p>
+              <p>Tavoli Occupati: {tavoli.filter(t => t.stato === 'occupato').length}</p>
+          </div>
+
+          {tavoli.length === 0 && <p>nessun tavolo disponibile, creane uno nuovo</p>}
+
+            <form className='panel-edit' onSubmit={handleSubmit}>
+              <label>Numero Del Tavolo
+                <input
+                  type="number"
+                  placeholder="Numero Del Tavolo"
+                  value={numero}
+                  onChange={(e) => setNumero(e.target.value)}
+                  required
+                  min="1"
+                />
+              </label>
+
+              <label>Posti max disponibili
+                <input
+                  type="number"
+                  placeholder="Posti"
+                  value={posti}
+                  onChange={(e) => setPosti(e.target.value)}
+                  required
+                  min="1"
+                />
+              </label>
+            <button type="submit">Aggiungi tavolo</button>
+          </form>
+
+          <select className='panel-edit' value={salaSfondo} onChange={(e) => setSalaSfondo(e.target.value)}>
+            {saleDisponibili.map((sala) => (
+              <option key={sala.img} value={sala.img}>{sala.nome}</option>
+            ))}
+          </select>
+
+          <div className="pannello-prenotazioni">
+              {prenotazioni.slice(0, 4).map((pren) => (
+                <div
+                  key={pren.id}
+                  className={`prenotazione-card ${prenotazioneSelezionata?.id === pren.id ? 'selezionata' : ''}`}
+                  onClick={() => setPrenotazioneSelezionata(pren)}
+                >
+                  <strong>{pren.nome}</strong>
+                  <p>{pren.persone} persone</p>
+                  <p>ore {pren.ora}</p>
+                </div>
+            ))}
+          </div>
+          </>
+        )} 
+      </aside>     
     </main>
     </>
   )
@@ -309,3 +322,4 @@ const handleMuovi =  async (id: string, posX: number, posY: number) => {
 
 
 export default App;
+
