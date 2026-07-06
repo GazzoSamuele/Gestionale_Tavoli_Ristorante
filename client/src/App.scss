@@ -33,15 +33,57 @@ $element3: #F3E5C8;
   padding: 16px;
   box-sizing: border-box;
 }
+.alg-new-table-change-layout{
+  display: flex;
+}
 
 .status-tavoli{
   display: flex;
   justify-content: flex-end;
-  gap: 100px;
-  background-color: $element1;
+  width: fit-content;
+  background-color: $background;
   padding: 15px;
   border-radius: 15px;
+  color: $element3;
+  text-transform: uppercase;
 }
+.alg-stats-totali{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background-color: #5A3B26;
+    border-radius: 15px;
+}
+.alg-stats-liberi{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background-color: #5A3B26;
+    border-radius: 15px;
+}
+.alg-stats-occupati{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background-color: #5A3B26;
+    border-radius: 15px;
+}
+.alg-stats-totali > :nth-child(1) {
+  color: $element3;
+  font-weight: 900;
+}
+.alg-stats-liberi > :nth-child(1) {
+  color: $verde;
+  font-weight: 900;
+}
+.alg-stats-occupati > :nth-child(1) {
+  color: $rosso;
+  font-weight: 900;
+}
+
 
 aside{
   flex: 0 0 auto;
@@ -52,6 +94,19 @@ aside{
   padding: 15px;
   gap: 16px;
   overflow-y: auto;
+}
+.btn-close-alert-tables{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.btn-close-alert-tables p{
+  background: #F3E5C8;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 18px;
+  color: $background;
+  font-size: 0.8rem;
 }
 .panel-prenotazioni-confermate{
   background-color: $element2;
@@ -67,6 +122,27 @@ aside{
   font-size: 1.4rem;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.path-element-panel-edit{
+  background: #F3E5C8;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.path-element-panel-edit label{
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b5541;
+  margin-bottom: 6px;
+}
+
+.path-element-panel-edit h3 {
+  font-weight: 800;
+  font-size: 15px;
+  color: #492D1C;
+  margin-bottom: 14px;
 }
 
 .toggle-panel-bookings {
@@ -148,7 +224,6 @@ button {
   background: #eee;
 
   &.selezionata {
-    outline: 3px solid #4a90d9; 
     background-color: gold;
     opacity: 0.75; 
   }

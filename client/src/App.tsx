@@ -285,55 +285,75 @@ const inviaWhatsApp = (pren: Prenotazione) => {
 
     {/* PANNELLO DI EDIT GENERALE */}
       <aside>
-        <button className="toggle-panel-edit" onClick={() => setpanelEdit(!panelEdit)}>
+        <div className='btn-close-alert-tables'>
+          <button className="toggle-panel-edit" onClick={() => setpanelEdit(!panelEdit)}>
           <FontAwesomeIcon icon={panelEdit ? faXmark : faPlus} />
         </button>
+
+        <div className=''>{tavoli.length === 0 && <p>nessun tavolo disponibile, creane uno nuovo</p>}</div>
+
+        </div>
         
-        {/* FORM PER L'AGGIUNTA DI UN NUOVO TAVOLO */}
+        
+        {/* FORM PER L'AGGIUNTA DI UN NUOVO TAVOLO ED IL CAMBIO LAYOUT DELLA SALA */}
         {panelEdit && (
           <>
-          <div className='status-tavoli'>
-            {/* <h1>Gestione Tavoli Ristorante</h1> */}
-              <p>Tavoli Totali: {tavoli.length}</p>
-              <p>Tavoli Liberi: {tavoli.filter(t => t.stato === 'libero').length}</p>
-              <p>Tavoli Occupati: {tavoli.filter(t => t.stato === 'occupato').length}</p>
+              <div className='alg-new-table-change-layout'>
+                <div className='status-tavoli'>
+                  <div className='alg-stats-totali'>
+                    <p>{tavoli.length}</p>
+                    <p>Totali</p>
+                  </div>
+                  <div className='alg-stats-liberi'>
+                    <p>{tavoli.filter(t => t.stato === 'libero').length}</p>
+                    <p>Liberi</p>
+                  </div>
+                  <div className='alg-stats-occupati'>
+                    <p>{tavoli.filter(t => t.stato === 'occupato').length}</p>
+                    <p>Occupati</p>
+                  </div>
+                  <div className='path-element-panel-edit'>
+                    <h3>Cambia il layout della sala</h3>
+                    <select className='panel-edit' value={salaSfondo} onChange={(e) => setSalaSfondo(e.target.value)}>
+                    {saleDisponibili.map((sala) => (
+                      <option key={sala.img} value={sala.img}>{sala.nome}</option>
+                    ))}
+                  </select>
+                </div>
+            </div>          
           </div>
 
-          {tavoli.length === 0 && <p>nessun tavolo disponibile, creane uno nuovo</p>}
+            
+              <div className='path-element-panel-edit'>
+                <h3>Aggiungi un nuovo tavolo</h3>
+                <form className='panel-edit' onSubmit={handleSubmit}>
+                  <label>Numero Del Tavolo
+                    <input
+                      type="number"
+                      placeholder="Numero Del Tavolo"
+                      value={numero}
+                      onChange={(e) => setNumero(e.target.value)}
+                      required
+                      min="1"
+                    />
+                  </label>
 
-            <form className='panel-edit' onSubmit={handleSubmit}>
-              <label>Numero Del Tavolo
-                <input
-                  type="number"
-                  placeholder="Numero Del Tavolo"
-                  value={numero}
-                  onChange={(e) => setNumero(e.target.value)}
-                  required
-                  min="1"
-                />
-              </label>
-
-              <label>Posti max disponibili
-                <input
-                  type="number"
-                  placeholder="Posti"
-                  value={posti}
-                  onChange={(e) => setPosti(e.target.value)}
-                  required
-                  min="1"
-                />
-              </label>
-            <button type="submit">Aggiungi tavolo</button>
-          </form>
-
-          <select className='panel-edit' value={salaSfondo} onChange={(e) => setSalaSfondo(e.target.value)}>
-            {saleDisponibili.map((sala) => (
-              <option key={sala.img} value={sala.img}>{sala.nome}</option>
-            ))}
-          </select>
+                  <label>Posti max disponibili
+                    <input
+                      type="number"
+                      placeholder="Posti"
+                      value={posti}
+                      onChange={(e) => setPosti(e.target.value)}
+                      required
+                      min="1"
+                    />
+                  </label>
+                <button type="submit">Aggiungi tavolo</button>
+              </form>
+            </div>
 
           <div className="pannello-prenotazioni">
-              {prenotazioni.slice(0, 4).map((pren) => (
+              {prenotazioni.slice(0, 6).map((pren) => (
                 <div
                   key={pren.id}
                   className={`prenotazione-card ${prenotazioneSelezionata?.id === pren.id ? 'selezionata' : ''}`}
