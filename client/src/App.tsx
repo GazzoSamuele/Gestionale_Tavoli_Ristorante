@@ -276,75 +276,78 @@ const inviaWhatsApp = (pren: Prenotazione) => {
           />
         ))}
       </section>
+      
+      <section className='stato-tavoli-panels'>
+        <div className='alg-status-span-table'>
+          <div className='status-tavoli'>
+              <div className='alg-stats-totali'>
+                <p>{tavoli.length}</p>
+                <p>Totali</p>
+              </div>
+              <div className='alg-stats-liberi'>
+                <p>{tavoli.filter(t => t.stato === 'libero').length}</p>
+                <p>Liberi</p>
+              </div>
+              <div className='alg-stats-occupati'>
+                <p>{tavoli.filter(t => t.stato === 'occupato').length}</p>
+                <p>Occupati</p>
+              </div>
+            </div> 
 
+            <div>{tavoli.length === 0 && <p>nessun tavolo disponibile, creane uno nuovo</p>}</div>
+        </div>
 
+      <section className='panels'>
     {/* PANNELLO DI EDIT GENERALE */}
       <aside>
-        <div className='btn-close-alert-tables'>
-          <button className="toggle-panel-edit" onClick={() => setpanelEdit(!panelEdit)}>
-          <FontAwesomeIcon icon={panelEdit ? faXmark : faPlus} />
-        </button>
-
-        <div className=''>{tavoli.length === 0 && <p>nessun tavolo disponibile, creane uno nuovo</p>}</div>
-
+          <div className='btn-close-alert-tables'>
+            <button className="toggle-panel-edit" onClick={() => setpanelEdit(!panelEdit)}>
+            <FontAwesomeIcon icon={panelEdit ? faXmark : faPlus} />
+          </button>
         </div>
-        
-        
-        {/* FORM PER L'AGGIUNTA DI UN NUOVO TAVOLO ED IL CAMBIO LAYOUT DELLA SALA */}
+        {/* CAMBIO LAYOUT DELLA SALA E FORM PER L'AGGIUNTA DI UN NUOVO TAVOLO*/}
         {panelEdit && (
-          <>
-              <div className='alg-new-table-change-layout'>
-                <div className='status-tavoli'>
-                  <div className='alg-stats-totali'>
-                    <p>{tavoli.length}</p>
-                    <p>Totali</p>
-                  </div>
-                  <div className='alg-stats-liberi'>
-                    <p>{tavoli.filter(t => t.stato === 'libero').length}</p>
-                    <p>Liberi</p>
-                  </div>
-                  <div className='alg-stats-occupati'>
-                    <p>{tavoli.filter(t => t.stato === 'occupato').length}</p>
-                    <p>Occupati</p>
-                  </div>
-                  <div className='path-element-panel-edit'>
-                    <h3>Cambia il layout della sala</h3>
-                    <select className='panel-edit' value={salaSfondo} onChange={(e) => setSalaSfondo(e.target.value)}>
-                    {saleDisponibili.map((sala) => (
-                      <option key={sala.img} value={sala.img}>{sala.nome}</option>
-                    ))}
-                  </select>
-                </div>
-            </div>          
+          <> 
+
+          <div className='path-element-panel-edit'>
+            <h3>Cambia il layout della sala</h3>
+              <select className='panel-edit' value={salaSfondo} onChange={(e) => setSalaSfondo(e.target.value)}>
+              {saleDisponibili.map((sala) => (
+                <option key={sala.img} value={sala.img}>{sala.nome}</option>
+              ))}
+            </select>
           </div>
+        
+           
+          <div className='alg-new-table-change-layout'>    
 
-            
-              <div className='path-element-panel-edit'>
-                <h3>Aggiungi un nuovo tavolo</h3>
-                <form className='panel-edit' onSubmit={handleSubmit}>
-                  <label>Numero Del Tavolo
-                    <input
-                      type="number"
-                      placeholder="Numero Del Tavolo"
-                      value={numero}
-                      onChange={(e) => setNumero(e.target.value)}
-                      required
-                      min="1"
-                    />
-                  </label>
+                <div className='path-element-panel-edit'>
+                  <h3>Aggiungi un nuovo tavolo</h3>
+                  <form className='panel-edit' onSubmit={handleSubmit}>
+                    <label>Numero Del Tavolo
+                      <input
+                        type="number"
+                        placeholder="Numero Del Tavolo"
+                        value={numero}
+                        onChange={(e) => setNumero(e.target.value)}
+                        required
+                        min="1"
+                      />
+                    </label>
 
-                  <label>Posti max disponibili
-                    <input
-                      type="number"
-                      placeholder="Posti"
-                      value={posti}
-                      onChange={(e) => setPosti(e.target.value)}
-                      required
-                      min="1"
-                    />
-                  </label>
-                <button type="submit">Aggiungi tavolo</button>
-              </form>
+                    <label>Posti max disponibili
+                      <input
+                        type="number"
+                        placeholder="Posti"
+                        value={posti}
+                        onChange={(e) => setPosti(e.target.value)}
+                        required
+                        min="1"
+                      />
+                    </label>
+                  <button type="submit">Aggiungi tavolo</button>
+                </form>
+              </div>
             </div>
 
           <div className="pannello-prenotazioni">
@@ -378,21 +381,23 @@ const inviaWhatsApp = (pren: Prenotazione) => {
                 <div
                       onClick={() => setTavoloEvidenziato(pren.tavoloId ?? null)}
                   // className={`prenotazione-card ${prenotazioneSelezionata?.id === pren.id ? 'selezionata' : ''}`}
-                >
-                  <strong>{pren.nome}</strong>
-                  <p>{pren.persone} persone</p>
-                  <p>ore {pren.ora}</p>
+                      >
+                        <strong>{pren.nome}</strong>
+                        <p>{pren.persone} persone</p>
+                        <p>ore {pren.ora}</p>
 
-                  {prenotazioniInviate.includes(pren._id)
-                    ? <p>✅ WhatsApp Inviato</p>
-                    : <button onClick={(e) => { e.stopPropagation(); inviaWhatsApp(pren) }}>Conferma via WhatsApp</button>
-                  }
-                </div>
-            ))}
-          </div>
-          </>
-        )} 
-      </aside>     
+                    {prenotazioniInviate.includes(pren._id)
+                      ? <p>✅ WhatsApp Inviato</p>
+                      : <button onClick={(e) => { e.stopPropagation(); inviaWhatsApp(pren) }}>Conferma via WhatsApp</button>
+                    }
+                  </div>
+              ))}
+            </div>
+            </>
+          )} 
+        </aside>    
+        </section>
+      </section> 
     </main>
     </>
   )

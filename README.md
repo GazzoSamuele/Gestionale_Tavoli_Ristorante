@@ -78,9 +78,11 @@ App_Gestione_Tavoli_Ristorante/
     └── src/
         ├── index.ts        # Avvio server + connessione MongoDB
         ├── models/
-        │   └── Tavolo.ts   # Schema/Model Mongoose del tavolo
+        │   ├── Tavolo.ts        # Schema/Model Mongoose del tavolo
+        │   └── Prenotazione.ts  # Schema/Model Mongoose della prenotazione
         └── routes/
-            └── tavoli.ts    # Rotte REST CRUD dei tavoli
+            ├── tavoli.ts        # Rotte REST CRUD dei tavoli
+            └── prenotazioni.ts  # Rotte REST CRUD delle prenotazioni
 ```
 
 ---
@@ -131,12 +133,17 @@ npm run dev
 | `POST` | `/api/tavoli` | Crea un nuovo tavolo |
 | `PUT` | `/api/tavoli/:id` | Modifica un tavolo (stato, posizione…) |
 | `DELETE` | `/api/tavoli/:id` | Elimina un tavolo |
+| `GET` | `/api/prenotazioni` | Elenca tutte le prenotazioni |
+| `POST` | `/api/prenotazioni` | Crea una nuova prenotazione |
+| `PUT` | `/api/prenotazioni/:id` | Modifica una prenotazione (stato, note…) |
+| `DELETE` | `/api/prenotazioni/:id` | Elimina una prenotazione |
 
 ---
 
 ## 🔭 Sviluppi futuri
 
-- API backend per la gestione delle prenotazioni (ora simulate con dati fittizi)
+- Form per creare nuove prenotazioni direttamente dall'interfaccia
+- Deploy online (frontend su Vercel, backend su Render)
 - Autenticazione con credenziali e ruoli (**admin** vs **client** in sola lettura)
 - Aggiornamento dei tavoli in tempo reale (Socket.io)
 

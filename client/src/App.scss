@@ -33,14 +33,26 @@ $element3: #F3E5C8;
   padding: 16px;
   box-sizing: border-box;
 }
-.alg-new-table-change-layout{
+
+.stato-tavoli-panels{
+  display: flex;
+  flex-direction: column;
+}
+.panels{
   display: flex;
 }
+
+.alg-status-span-table{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 
 .status-tavoli{
   display: flex;
   justify-content: flex-end;
-  width: fit-content;
+  width: auto;
   background-color: $background;
   padding: 15px;
   border-radius: 15px;
@@ -72,8 +84,9 @@ $element3: #F3E5C8;
     border-radius: 15px;
 }
 .alg-stats-totali > :nth-child(1) {
-  color: $element3;
-  font-weight: 900;
+    color: #F3E5C8;
+    font-weight: 900;
+    margin: 0px;
 }
 .alg-stats-liberi > :nth-child(1) {
   color: $verde;
@@ -100,13 +113,11 @@ aside{
     align-items: center;
     justify-content: space-between;
 }
-.btn-close-alert-tables p{
-  background: #F3E5C8;
-  border-radius: 14px;
-  padding: 16px;
-  margin-bottom: 18px;
-  color: $background;
-  font-size: 0.8rem;
+.btn-close-alert-tables p {
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 0.8rem;
+    margin: 0px;
 }
 .panel-prenotazioni-confermate{
   background-color: $element2;
@@ -229,14 +240,9 @@ button {
   }
 }
 
-
-
-
-
-
 // RESPONSIVE
 
-@media (max-width: 768px) {
+@media (max-width: 768px) and (orientation: portrait) {
   .sala {
     background-image: none !important; 
     aspect-ratio: auto;                 
