@@ -8,25 +8,13 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 // INTERFACCIA TS PER LA VISUALIZZAZIONE DELL'UNITA' "PRENOTAZIONE"
 interface Prenotazione {
-  id: number;
+  _id: string;
   nome: string;
   persone: number;
   ora: string;
   telefono: string;
   tavoloId?: string;
 }
-
-const prenotazioniFinte: 
-Prenotazione[] = [
-  { id: 1, nome: 'Rossi',   persone: 4, ora: '22:00', telefono: '393312650471' },
-  { id: 2, nome: 'Bianchi', persone: 2, ora: '19:30', telefono: '393312650471' },
-  { id: 3, nome: 'Verdi',   persone: 6, ora: '19:00', telefono: '393312650471' },
-  { id: 4, nome: 'Gialli',   persone: 2, ora: '20:15', telefono: '393312650471' },
-  { id: 5, nome: 'Blu', persone: 1, ora: '20:45', telefono: '393312650471' },
-  { id: 6, nome: 'Viola',   persone: 8, ora: '21:00', telefono: '393312650471' },
-  { id: 7, nome: 'Scuri', persone: 8, ora: '20:30', telefono: '393312650471' },
-  { id: 8, nome: 'Chiari',   persone: 12, ora: '21:30', telefono: '393312650471' },
-]
 
 const saleDisponibili = [
   { nome: 'layout sala 1', img: '/piantine-sale/piantina1.svg' },
@@ -50,13 +38,13 @@ interface Tavolo {
 interface TavoloCardProps {
   tavolo: Tavolo;
   onDelete: (id: string) => void;
-  onUpdateStato: (id: string, nuovoStato: string) => void;
+  // onUpdateStato: (id: string, nuovoStato: string) => void;
   onAssign: (tavolo: Tavolo) => void;
   onMuovi: (id: string, posX: number, posY: number) => void;
   evidenziato: boolean;
 }
 
-function TavoloCard({ tavolo, onDelete, onUpdateStato, onAssign, onMuovi, evidenziato }: TavoloCardProps) {
+function TavoloCard({ tavolo, onDelete, onAssign, onMuovi, evidenziato }: TavoloCardProps) {
 
   // la posizione attuale della carta (parte da quella salvata nel DB)
   const [pos, setPos] = useState({ x: tavolo.posX, y: tavolo.posY})
@@ -128,13 +116,13 @@ function TavoloCard({ tavolo, onDelete, onUpdateStato, onAssign, onMuovi, eviden
         </h2>
 
       <p>{tavolo.posti} posti</p>
-      <p>{tavolo.stato}</p>
+      {/* <p>{tavolo.stato}</p> */}
 
-      <select value={tavolo.stato} onClick={(e) => e.stopPropagation()} onChange={(e) => onUpdateStato(tavolo._id, e.target.value)}>
+      {/* <select value={tavolo.stato} onClick={(e) => e.stopPropagation()} onChange={(e) => onUpdateStato(tavolo._id, e.target.value)}>
         <option value="libero">Libero</option>
         <option value="occupato">Occupato</option>
         <option value="riservato">Riservato</option>
-      </select>
+      </select> */}
       <button onClick={(e) => { e.stopPropagation(); onDelete(tavolo._id) }}>Elimina</button>
     </div>
   )
@@ -145,7 +133,7 @@ function App() {
   const [posti, setPosti] = useState('')
   const [tavoli, setTavoli] = useState<Tavolo[]>([])
 
-  const [prenotazioni, setPrenotazioni] = useState<Prenotazione[]>(prenotazioniFinte)
+  const [prenotazioni, setPrenotazioni] = useState<Prenotazione[]>([])
   const [prenotazioneSelezionata, setPrenotazioneSelezionata] = useState<Prenotazione | null>(null)
 
   const [salaSfondo, setSalaSfondo] = useState(saleDisponibili[0].img)
@@ -157,12 +145,19 @@ function App() {
 
   const [tavoloEvidenziato, setTavoloEvidenziato] = useState<string | null>(null)
 
-  const [prenotazioniInviate, setPrenotazioniInviate] = useState<number[]>([])
+  const [prenotazioniInviate, setPrenotazioniInviate] = useState<string[]>([])
 
   useEffect(() => {
   fetch(`${API_URL}/api/tavoli`)
     .then(res => res.json())
     .then(data => setTavoli(data))
+    .catch(err => console.error(err))
+}, [])
+
+  useEffect(() => {
+  fetch('http://localhost:3000/api/prenotazioni')
+    .then(res => res.json())
+    .then(data => setPrenotazioni(data))
     .catch(err => console.error(err))
 }, [])
 
@@ -228,7 +223,7 @@ const handleAssegna = (tavolo: Tavolo) => {
   handleUpdate(tavolo._id, 'occupato')
 
   // togli la prenotazione assegnata
-  setPrenotazioni(prenotazioni.filter((p) => p.id !== prenotazioneSelezionata.id))
+  setPrenotazioni(prenotazioni.filter((p) => p._id !== prenotazioneSelezionata._id))
 
   // spostamento delle prenotazioni confermate
   setPrenotazioniConfermate([...prenotazioniConfermate, {...prenotazioneSelezionata, tavoloId: tavolo._id }])
@@ -260,7 +255,7 @@ const inviaWhatsApp = (pren: Prenotazione) => {
   window.open(url, '_blank')
 
   // MESSAGGIO NELLE PRENOTAZIONI CONFERMATE CHE INDICA L'INVIO DEL MESSAGGIO SU WHATSAPP AL CLIENTE
-  setPrenotazioniInviate([...prenotazioniInviate, pren.id])
+  setPrenotazioniInviate([...prenotazioniInviate, pren._id])
 }
 
   return (
@@ -274,7 +269,7 @@ const inviaWhatsApp = (pren: Prenotazione) => {
             key={tavolo._id}
             tavolo={tavolo}
             onDelete={handleDelete}
-            onUpdateStato={handleUpdate}
+            // onUpdateStato={handleUpdate}
             onAssign={handleAssegna}
             onMuovi={handleMuovi}
             evidenziato={tavolo._id === tavoloEvidenziato}
@@ -355,15 +350,14 @@ const inviaWhatsApp = (pren: Prenotazione) => {
           <div className="pannello-prenotazioni">
               {prenotazioni.slice(0, 6).map((pren) => (
                 <div
-                  key={pren.id}
-                  className={`prenotazione-card ${prenotazioneSelezionata?.id === pren.id ? 'selezionata' : ''}`}
+                  key={pren._id}
+                  className={`prenotazione-card ${prenotazioneSelezionata?._id === pren._id ? 'selezionata' : ''}`}
                   onClick={() => setPrenotazioneSelezionata(pren)}
                 >
                   <strong>{pren.nome}</strong>
                   <p>{pren.persone} persone</p>
                   <p>ore {pren.ora}</p>
 
-                  <button onClick={(e) => { e.stopPropagation(); inviaWhatsApp(pren) }}>Conferma via WhatsApp</button>
                 </div>
             ))}
           </div>
@@ -389,7 +383,10 @@ const inviaWhatsApp = (pren: Prenotazione) => {
                   <p>{pren.persone} persone</p>
                   <p>ore {pren.ora}</p>
 
-                  {prenotazioniInviate.includes(pren.id) && <p>✅ WhatsApp inviato correttamente</p>}
+                  {prenotazioniInviate.includes(pren._id)
+                    ? <p>✅ WhatsApp Inviato</p>
+                    : <button onClick={(e) => { e.stopPropagation(); inviaWhatsApp(pren) }}>Conferma via WhatsApp</button>
+                  }
                 </div>
             ))}
           </div>

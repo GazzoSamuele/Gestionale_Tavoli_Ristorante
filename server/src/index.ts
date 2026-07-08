@@ -2,7 +2,9 @@ import 'dotenv/config';
 
 import cors from 'cors';
 import tavoliRouter from './routes/tavoli';
+import prenotazioniRouter from './routes/prenotazioni';
 import Tavolo from './models/Tavolo'
+import Prenotazione from './models/Prenotazione';
 import express from 'express';
 import mongoose from 'mongoose';    
 
@@ -23,6 +25,8 @@ app.use(cors())
 app.use(express.json())
 // tutte le rotte del tavoliRouter partono da /api/tavoli
 app.use('/api/tavoli', tavoliRouter)
+// tutte le rotte del prenotazioniRouter partono da /api/prenotazioni
+app.use('/api/prenotazioni', prenotazioniRouter)
 
 // Render (e ogni hosting) assegna la porta tramite process.env.PORT. Con || 3000, in locale usa 3000, online usa quella di Render.
 const PORT = process.env.PORT || 3000;
