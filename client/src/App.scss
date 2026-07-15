@@ -1,226 +1,376 @@
-@import url('https://googleapis.com');
+@import url("https://googleapis.com");
 
 body {
-  font-family: 'Manrope', sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 
+/* ---------- PALETTE ---------- */
+$espresso: #43291a; // marrone principale
+$espresso-2: #3b2417; // sala / sfondo scuro
+$page: #efe5d3; // sfondo pagina (crema calda)
+$cream: #f5ead6; // testo chiaro su scuro
+$cream-card: #fbf4e6; // superfici crema
+$cream-body: #fcf7ec; // corpo card tavolo
+$sage: #7e8353; // pannello gestione
+$terracotta: #c87a3a; // pannello confermate
+$accent: #db8b3e; // arancio d'accento
+$muted: #8a7962; // testo secondario
+$hairline: #d9c9ab; // bordi input
 
-// COLORI PRINCIPALI
-$verde:  #00c922;
-$rosso:  #d40000;
-$giallo: #ffd000;
-$background: #492D1C; 
-$element1: #8A8D57;  
-$element2: #EB9C4C;
-$element3: #F3E5C8;
+// Stati (mantenuti ma ammorbiditi)
+$verde: #2e8b57;
+$rosso: #c0392b;
+$giallo: #d4a017;
 
-// EFFETTI E DISTANZIAMENTI
+$serif: "Cormorant Garamond", serif;
+$sans: "Manrope", sans-serif;
 
-// #root {
-//   width: 90%;
-//   margin: 0 auto;
-//   text-align: center;
-//   display: flex;
-//   flex-direction: column;
-//   box-sizing: border-box;
-// }
+/* ---------- BASE ---------- */
+body {
+  margin: 0;
+  font-family: $sans;
+  color: $espresso;
+  background: $page;
+}
 
 .layout-sala {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   width: 100%;
   height: 100vh;
-  padding: 16px;
+  padding: 20px;
   box-sizing: border-box;
 }
 
-.stato-tavoli-panels{
+/* ---------- SALA / PIANTINA ---------- */
+.prenotazioni-confermate-and-sala {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  gap: 20px;
 }
-.panels{
-  display: flex;
+.sala {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  height: 100%;
+  padding: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  background-color: $espresso-2;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  box-shadow:
+    inset 0px 0px 0px 10px #3b2417,
+    inset 0 12px 0px 0px #3b2417;
+
+  // vignettatura calda sopra la piantina
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at 50% 40%,
+      rgba(219, 139, 62, 0.1),
+      transparent 70%
+    );
+  }
 }
 
-.alg-status-span-table{
+/* ---------- CARD TAVOLO ---------- */
+.tavolo-card {
+  position: absolute;
+  width: 150px;
+  padding: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  color: $espresso;
+  background: $cream-body;
+  border: 1px solid rgba(59, 36, 24, 0.06);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+  transition: box-shadow 0.2s;
+
+  h2 {
+    margin: 0;
+    padding: 10px 14px;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1;
+    color: #fff;
+    cursor: grab;
+  }
+
+  p {
+    margin: 10px 0 0;
+    padding: 0 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: $muted;
+  }
+
+  button {
+    align-self: flex-start;
+    margin: 8px 14px 12px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: #b0563f;
+    cursor: pointer;
+    &:hover {
+      opacity: 0.75;
+    }
+  }
+
+  &.tavolo-libero h2 {
+    background: $verde;
+  }
+  &.tavolo-occupato h2 {
+    background: $rosso;
+  }
+  &.tavolo-riservato h2 {
+    background: $giallo;
+  }
+
+  &.evidenziato {
+    outline: none;
+    box-shadow:
+      0 0 0 3px #e8c24a,
+      0 0 26px 4px rgba(232, 194, 74, 0.6);
+  }
+}
+
+/* ---------- COLONNA DESTRA ---------- */
+.stato-tavoli-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  flex: 0 1 560px;
+  min-width: 0;
+  height: 100%;
+}
+
+/* ---------- BARRA STATISTICHE ---------- */
+.alg-status-span-table {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-
-.status-tavoli{
+.status-tavoli {
   display: flex;
   justify-content: flex-end;
-  width: auto;
-  background-color: $background;
-  padding: 15px;
-  border-radius: 15px;
-  color: $element3;
-  text-transform: uppercase;
-}
-.alg-stats-totali{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px;
-    background-color: #5A3B26;
-    border-radius: 15px;
-}
-.alg-stats-liberi{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px;
-    background-color: #5A3B26;
-    border-radius: 15px;
-}
-.alg-stats-occupati{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px;
-    background-color: #5A3B26;
-    border-radius: 15px;
-}
-.alg-stats-totali > :nth-child(1) {
-    color: #F3E5C8;
-    font-weight: 900;
-    margin: 0px;
-}
-.alg-stats-liberi > :nth-child(1) {
-  color: $verde;
-  font-weight: 900;
-}
-.alg-stats-occupati > :nth-child(1) {
-  color: $rosso;
-  font-weight: 900;
+  gap: 12px;
+  background-color: $espresso;
+  padding: 18px 24px;
+  border-radius: 18px;
+  color: $cream;
+  text-transform: none;
+  box-shadow: 0 10px 30px rgba(59, 36, 24, 0.22);
 }
 
-
-aside{
-  flex: 0 0 auto;
+.alg-stats-totali,
+.alg-stats-liberi,
+.alg-stats-occupati {
   display: flex;
   flex-direction: column;
-  background-color: $element1;
-  border-radius: 10px;
-  padding: 15px;
+  align-items: center;
+  gap: 2px;
+  min-width: 78px;
+  padding: 12px 20px;
+  border-radius: 14px;
+
+  // numero
+  > :nth-child(1) {
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1;
+    margin: 0;
+  }
+  // etichetta
+  > :nth-child(2) {
+    margin: 0;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(245, 234, 214, 0.6);
+  }
+}
+
+.alg-stats-totali {
+  background: rgba(245, 234, 214, 0.06);
+  border: 1px solid rgba(245, 234, 214, 0.1);
+  > :nth-child(1) {
+    color: $cream;
+  }
+}
+.alg-stats-liberi {
+  background: rgba(46, 139, 87, 0.12);
+  border: 1px solid rgba(46, 139, 87, 0.3);
+  > :nth-child(1) {
+    color: #5bc98a;
+  }
+}
+.alg-stats-occupati {
+  background: rgba(192, 57, 43, 0.14);
+  border: 1px solid rgba(192, 57, 43, 0.35);
+  > :nth-child(1) {
+    color: #e67c6e;
+  }
+}
+
+/* ---------- PANNELLI ---------- */
+.panels {
+  display: flex;
+  gap: 18px;
+  flex: 1;
+  min-height: 0;
+}
+
+aside {
+  width: auto;
+  display: flex;
+  flex-direction: column;
   gap: 16px;
+  padding: 18px;
+  border-radius: 18px;
+  background-color: $sage;
   overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(59, 36, 24, 0.16);
 }
-.btn-close-alert-tables{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+
+.panel-prenotazioni-confermate {
+  background-color: $terracotta;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 18px;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(59, 36, 24, 0.16);
 }
-.btn-close-alert-tables p {
-    border-radius: 14px;
-    padding: 16px;
-    font-size: 0.8rem;
-    margin: 0px;
+
+.prenotazioni-only-whatsapp{
+  display: flex;
+  gap: 10px;
 }
-.panel-prenotazioni-confermate{
-  background-color: $element2;
+.btn-close-alert-tables {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .toggle-panel-edit {
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   border-radius: 50%;
-  background-color: $element2;
+  background-color: $accent;
   color: #fff;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
+  line-height: 1;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+}
+.toggle-panel-bookings {
+  background-color: $sage;
 }
 
-.path-element-panel-edit{
-  background: #F3E5C8;
+.table-not-avaible{
+  color: #f5ead6;
+  background-color: #db8b3e;
+  padding: 5px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* ---------- BLOCCHI CREMA NEL PANNELLO EDIT ---------- */
+.path-element-panel-edit {
+  background: $cream-card;
   border-radius: 14px;
   padding: 16px;
-  margin-bottom: 18px;
-}
-
-.path-element-panel-edit label{
-  font-size: 12px;
-  font-weight: 700;
-  color: #6b5541;
-  margin-bottom: 6px;
-}
-
-.path-element-panel-edit h3 {
-  font-weight: 800;
-  font-size: 15px;
-  color: #492D1C;
   margin-bottom: 14px;
+
+  h3 {
+    margin: 0 0 10px;
+    font-family: $sans;
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: $muted;
+  }
+
+  label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: $muted;
+    margin-bottom: 4px;
+  }
 }
 
-.toggle-panel-bookings {
-  background-color: $element1;                     
-}
-
+/* ---------- FORM ---------- */
 label {
   display: flex;
-  flex-direction: column;         
+  flex-direction: column;
   gap: 6px;
   font-weight: 600;
   text-align: left;
 }
 
-input {
-  padding: 8px 10px;
-  border: 2px solid $element1;
-  border-radius: 8px;
-  font-size: 1rem;
+input,
+select.panel-edit {
+  padding: 10px 12px;
+  border: 1.5px solid $hairline;
+  border-radius: 10px;
+  font-family: $sans;
+  font-size: 14px;
+  font-weight: 600;
+  color: $espresso;
+  background: #fff;
+
+  &:focus {
+    outline: none;
+    border-color: $accent;
+  }
+}
+input::placeholder {
+  color: #b3a48c;
 }
 
 button {
-  padding: 10px;
+  padding: 11px;
   border: none;
-  border-radius: 8px;
-  background-color: $element2;      
+  border-radius: 10px;
+  background-color: $accent;
   color: #fff;
+  font-family: $sans;
   font-weight: 700;
+  font-size: 14px;
   cursor: pointer;
   transition: opacity 0.2s;
-
-  &:hover { opacity: 0.9; }
-}
-
-.sala { 
-  flex: 1;     
-  position: relative;
-  height: 100%;  
-  padding: 0;      
-  // border: 3px dashed black;
-  background-size: 100% 100%; 
-  background-repeat: no-repeat;
-  background-color: $background;
-}
-
-.tavolo-card {
-  position: absolute;  
-  width: 180px;
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  color: #222;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  // stati annidati dentro la carta
-  &.tavolo-libero    { background-color: $verde; }
-  &.tavolo-occupato  { background-color: $rosso; }
-  &.tavolo-riservato { background-color: $giallo; }
-
-  &.evidenziato { 
-    outline: 4px solid gold;
-    box-shadow: 0 0 20px 4px gold;    
+  &:hover {
+    opacity: 0.9;
   }
 }
 
+.path-element-panel-edit form.panel-edit button {
+  background-color: $espresso;
+  color: $cream;
+  letter-spacing: 0.3px;
+}
+
+/* ---------- PRENOTAZIONI DA GESTIRE ---------- */
 .pannello-prenotazioni {
   display: flex;
   flex-direction: column;
@@ -228,32 +378,94 @@ button {
 }
 
 .prenotazione-card {
-  cursor: pointer; 
-  padding: 8px;
-  margin-bottom: 6px;
-  border-radius: 8px;
-  background: #eee;
+  cursor: pointer;
+  padding: 12px 14px;
+  margin-bottom: 0;
+  border-radius: 12px;
+  background: rgba(251, 244, 230, 0.72);
+  transition:
+    box-shadow 0.15s,
+    background 0.15s;
+
+  strong {
+    font-size: 18px;
+    font-weight: 600;
+    color: $espresso;
+  }
+
+  p {
+    margin: 3px 0 0;
+    font-size: 13px;
+    color: $muted;
+    font-weight: 500;
+  }
 
   &.selezionata {
-    background-color: gold;
-    opacity: 0.75; 
+    background: $cream-card;
+    opacity: 1;
+    box-shadow:
+      0 0 0 2px $accent,
+      0 6px 16px rgba(59, 36, 24, 0.15);
   }
 }
 
-// RESPONSIVE
+/* ---------- CARD PRENOTAZIONI CONFERMATE ---------- */
+.panel-prenotazioni-confermate .prenotazioni-only-whatsapp > div {
+  padding: 14px;
+  border-radius: 14px;
+  background: $cream-body;
+  box-shadow: 0 4px 12px rgba(59, 36, 24, 0.1);
 
+  strong {
+    font-family: $serif;
+    font-size: 19px;
+    font-weight: 600;
+    color: $espresso;
+  }
+
+  p {
+    margin: 3px 0 12px;
+    font-size: 13px;
+    color: $muted;
+    font-weight: 500;
+  }
+
+  // pulsante WhatsApp
+  button {
+    width: 100%;
+    background-color: #25d366;
+    color: #fff;
+  }
+  // messaggio "WhatsApp inviato"
+  > p:last-child {
+    margin: 0;
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(37, 211, 102, 0.12);
+    color: #1a8f47;
+    font-weight: 700;
+  }
+}
+
+/* ---------- RESPONSIVE (tablet/mobile) ---------- */
 @media (max-width: 768px) and (orientation: portrait) {
-  .sala {
-    background-image: none !important; 
-    aspect-ratio: auto;                 
+  .layout-sala {
+    flex-direction: column;
     height: auto;
-    display: flex;                       
+  }
+  .sala {
+    background-image: none !important;
+    height: auto;
+    display: flex;
     flex-wrap: wrap;
     gap: 12px;
     justify-content: center;
     padding: 12px;
   }
   .tavolo-card {
-    position: static;                
+    position: static;
+  }
+  .stato-tavoli-panels {
+    flex: 1 1 auto;
   }
 }
