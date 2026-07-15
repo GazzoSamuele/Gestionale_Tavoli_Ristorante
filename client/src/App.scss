@@ -80,18 +80,20 @@ body {
 
 /* ---------- CARD TAVOLO ---------- */
 .tavolo-card {
-  position: absolute;
-  width: 150px;
-  padding: 0;
-  border-radius: 14px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  color: $espresso;
-  background: $cream-body;
-  border: 1px solid rgba(59, 36, 24, 0.06);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
-  transition: box-shadow 0.2s;
+    position: absolute;
+    width: 10%;
+    padding: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    color: #43291a;
+    background: #fcf7ec;
+    border: 1px solid rgba(59, 36, 24, 0.06);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+    transition: box-shadow 0.2s;
+    align-items: center;
+    gap: 15px;
 
   h2 {
     margin: 0;
@@ -106,35 +108,26 @@ body {
   p {
     margin: 10px 0 0;
     padding: 0 14px;
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 600;
-    color: $muted;
-  }
-
-  button {
-    align-self: flex-start;
-    margin: 8px 14px 12px;
-    padding: 0;
-    background: transparent;
-    border: none;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.4px;
-    color: #b0563f;
-    cursor: pointer;
-    &:hover {
-      opacity: 0.75;
-    }
+    color: #8a7962;
+    text-transform: uppercase;
   }
 
   &.tavolo-libero h2 {
-    background: $verde;
+    background: #2e8b57;
+    width: 100%;
+    text-align: center;
   }
   &.tavolo-occupato h2 {
     background: $rosso;
+    width: 100%;
+    text-align: center;
   }
   &.tavolo-riservato h2 {
     background: $giallo;
+    width: 100%;
+    text-align: center;
   }
 
   &.evidenziato {
@@ -143,6 +136,45 @@ body {
       0 0 0 3px #e8c24a,
       0 0 26px 4px rgba(232, 194, 74, 0.6);
   }
+}
+
+.tavolo-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px 12px;
+    align-items: center;
+}
+
+.tavolo-occupato{
+  display: grid;
+}
+
+.btn-libera-tavolo{
+      align-self: flex-start;
+    padding: 10px;
+    background: $giallo;
+    border: none;
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 0;
+}
+
+.btn-elimina-tavolo{
+      align-self: flex-start;
+    padding: 10px;
+    background: $rosso;
+    border: none;
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 0;
 }
 
 /* ---------- COLONNA DESTRA ---------- */
@@ -256,14 +288,68 @@ aside {
   box-shadow: 0 10px 30px rgba(59, 36, 24, 0.16);
 }
 
-.prenotazioni-only-whatsapp{
+.header-prenotazioni-confermate{
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 20px;
+  color: $cream;
+    h2{
+      color: #f5ead6;
+      text-transform: uppercase;
+      font-size: 1.3rem;
+    }
+}
+
+.prenotazioni-only-whatsapp{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+    padding: 12px 14px;
+    margin-bottom: 0;
+    border-radius: 12px;
+    background: rgba(251, 244, 230, 0.72);
+    transition: box-shadow 0.15s, background 0.15s;
+    width: fit-content;
+
+    strong{
+      font-size: 1.2rem;
+    }
+    p {
+      font-size: 1.2rem;
+      background-color: $rosso;
+      color: $cream-card;
+      margin: 0;
+      padding: 10px;
+      width: 90%;
+      text-align: center;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+    button {
+      padding: 11px;
+      border: none;
+      border-radius: 10px;
+      background-color: $verde;
+      color: #fff;
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+  }
 }
 .btn-close-alert-tables {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.panel-edit{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .toggle-panel-edit {
@@ -280,7 +366,24 @@ aside {
   line-height: 1;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+
+  h2{
+    font-size: 0.8rem;
+  }
 }
+
+.header-panel-edit{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: #f5ead6;
+    font-size: 0.8rem;
+    background-color: $espresso;
+    padding: 10px;
+    border-radius: 10px;
+    text-transform: uppercase;
+}
+
 .toggle-panel-bookings {
   background-color: $sage;
 }
@@ -311,7 +414,7 @@ aside {
   }
 
   label {
-    font-size: 11px;
+    font-size: 15px;
     font-weight: 700;
     letter-spacing: 0.3px;
     color: $muted;
@@ -330,14 +433,15 @@ label {
 
 input,
 select.panel-edit {
-  padding: 10px 12px;
-  border: 1.5px solid $hairline;
-  border-radius: 10px;
-  font-family: $sans;
-  font-size: 14px;
-  font-weight: 600;
-  color: $espresso;
-  background: #fff;
+    padding: 10px 12px;
+    border: 1.5px solid #d9c9ab;
+    border-radius: 10px;
+    font-family: "Manrope", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #43291a;
+    background: #fff;
+    text-transform: uppercase;
 
   &:focus {
     outline: none;
@@ -375,11 +479,21 @@ button {
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+    h2{
+      color: #f5ead6;
+      text-transform: uppercase;
+      font-size: 1.3rem;
+    }
 }
 
 .prenotazione-card {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;  
+  align-items: center;
+  gap: 10px;
   cursor: pointer;
-  padding: 12px 14px;
+  padding: 20px;
   margin-bottom: 0;
   border-radius: 12px;
   background: rgba(251, 244, 230, 0.72);

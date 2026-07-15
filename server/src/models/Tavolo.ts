@@ -9,10 +9,12 @@ interface ITavolo {
     
     posX: number;
     posY: number;
+
+    sala: string;
 }
 
 const tavoloSchema = new mongoose.Schema<ITavolo>({
-    numero: { type: Number, required: true, unique: true },
+    numero: { type: Number, required: true },
     posti: { type: Number, required: true },
     stato: {
         type: String,
@@ -23,8 +25,12 @@ const tavoloSchema = new mongoose.Schema<ITavolo>({
     oraArrivo: { type: Date },
 
     posX: { type: Number, default: 0 },
-    posY: { type: Number, default: 0 }
+    posY: { type: Number, default: 0 },
+
+    sala: { type: String, required: true},
 });
+
+tavoloSchema.index({ numero: 1, sala: 1 }, { unique: true })
 
 const Tavolo = mongoose.model<ITavolo>('Tavolo', tavoloSchema);
 

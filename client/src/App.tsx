@@ -33,6 +33,8 @@ interface Tavolo {
 
   posX: number;
   posY: number;
+
+  sala: string
 }
 
 interface TavoloCardProps {
@@ -43,9 +45,10 @@ interface TavoloCardProps {
   onMuovi: (id: string, posX: number, posY: number) => void;
   evidenziato: boolean;
   prenotazione?: Prenotazione;
+  onLibera: (tavolo: Tavolo) => void;
 }
 
-function TavoloCard({ tavolo, onDelete, onAssign, onMuovi, evidenziato, prenotazione }: TavoloCardProps) {
+function TavoloCard({ tavolo, onDelete, onAssign, onMuovi, evidenziato, prenotazione, onLibera }: TavoloCardProps) {
 
   // la posizione attuale della carta (parte da quella salvata nel DB)
   const [pos, setPos] = useState({ x: tavolo.posX, y: tavolo.posY})
@@ -115,21 +118,25 @@ function TavoloCard({ tavolo, onDelete, onAssign, onMuovi, evidenziato, prenotaz
           >
             Tavolo {tavolo.numero}
         </h2>
-    {tavolo.stato === 'occupato' && prenotazione && (
+    <div className="tavolo-info">
+      {tavolo.stato === 'occupato' && prenotazione && (
         <>
-          <p>👤 {prenotazione.nome}</p>
-          <p>🕐 {prenotazione.ora}</p>
+          <p>{prenotazione.nome}</p>
+          <p>{prenotazione.ora}</p>
         </>
       )}
       <p>{tavolo.posti} posti</p>
-      <p>{tavolo.stato}</p>
+    </div>
 
       {/* <select value={tavolo.stato} onClick={(e) => e.stopPropagation()} onChange={(e) => onUpdateStato(tavolo._id, e.target.value)}>
         <option value="libero">Libero</option>
         <option value="occupato">Occupato</option>
         <option value="riservato">Riservato</option>
       </select> */}
-      <button onClick={(e) => { e.stopPropagation(); onDelete(tavolo._id) }}>Elimina</button>
+      {tavolo.stato === 'occupato' && (
+          <button className='btn-libera-tavolo' onClick={(e) => { e.stopPropagation(); onLibera(tavolo) }}>Libera tavolo</button>
+        )}
+      <button className='btn-elimina-tavolo' onClick={(e) => { e.stopPropagation(); onDelete(tavolo._id) }}>Elimina</button>
     </div>
   )
 }
@@ -143,6 +150,8 @@ function App() {
   const [prenotazioneSelezionata, setPrenotazioneSelezionata] = useState<Prenotazione | null>(null)
 
   const [salaSfondo, setSalaSfondo] = useState(saleDisponibili[0].img)
+
+  const [gestioneAperta, setGestioneAperta] = useState(false)
 
   const [panelEdit, setpanelEdit] = useState(false)
   const [panelReservations, setpanelReservations] = useState(false)
@@ -176,7 +185,7 @@ const handleSubmit = async (e: SubmitEvent) => {
   const res = await fetch(`${API_URL}/api/tavoli`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json'},
-    body: JSON.stringify({ numero: Number(numero), posti: Number(posti)})
+    body: JSON.stringify({ numero: Number(numero), posti: Number(posti), sala: salaSfondo})
   })
 
   if (!res.ok) {
@@ -246,6 +255,14 @@ const handleMuovi =  async (id: string, posX: number, posY: number) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ posX, posY })
   })
+  setTavoli(tavoli.map(t => t._id === id ? { ...t, posX, posY } : t))
+}
+
+// LIBERA IL TAVOLO DALLA PRENOTAZIONE ESISTENTE
+
+const handleLibera = (tavolo: Tavolo) => {
+  handleUpdate(tavolo._id, 'libero')  
+  setPrenotazioniConfermate(prenotazioniConfermate.filter(p => p.tavoloId !== tavolo._id))  
 }
 
 // FUNZIONE CHE INVIA IL MESSAGGIO SU WHATSAPP ALLA PRENOTAZIONE CONFERMATA
@@ -263,44 +280,48 @@ const inviaWhatsApp = (pren: Prenotazione) => {
   setPrenotazioniInviate([...prenotazioniInviate, pren._id])
 }
 
+// GESTIONE TAVOLI PRESENTI IN OGNI SALA
+
+const tavoliSala = tavoli.filter(t => t.sala === salaSfondo)
   return (
     <>
     <main className='layout-sala'>
 
     <div className='prenotazioni-confermate-and-sala'>
-  {/* PANNELLO PER LA VISUALIZZAZIONE DI TUTTE LE PRENOTAZIONI CONFERMATE */}
-    <div className='panel-prenotazioni-confermate'>
-      <button className="toggle-panel-edit toggle-panel-bookings" onClick={() => setpanelReservations(!panelReservations)}>
-        <FontAwesomeIcon icon={panelReservations ? faXmark : faPlus} />
-      </button>
-    
-      {panelReservations && (
-        <>
-        <div className="prenotazioni-only-whatsapp">
-            {prenotazioniConfermate.slice(0, 4).map((pren) => (
-              <div
-                key={pren._id}
-                className="prenotazione-card"
-                onClick={() => setTavoloEvidenziato(pren.tavoloId ?? null)}
-                >
-                  <strong>{pren.nome}</strong>
-                  <p>{pren.persone} persone</p>
-                  <p>ore {pren.ora}</p>
-                  <p>Tavolo {tavoli.find(t => t._id === pren.tavoloId)?.numero}</p>
+      <div className='panel-prenotazioni-confermate'>
+        <div className='header-prenotazioni-confermate'>
+          <button className="toggle-panel-edit toggle-panel-bookings" onClick={() => setpanelReservations(!panelReservations)}>
+            <FontAwesomeIcon icon={panelReservations ? faXmark : faPlus} />
+          </button>
+          <h2>Prenotazioni confermate</h2>
+        </div>
+        {panelReservations && (
+          <>
+          <div>
+              {prenotazioniConfermate.slice(0, 4).map((pren) => (
+                <div
+                  key={pren._id}
+                  className="prenotazioni-only-whatsapp"
+                  onClick={() => setTavoloEvidenziato(pren.tavoloId ?? null)}
+                  >
+                    <strong>{pren.nome}</strong>
+                    <strong>{pren.persone} persone</strong>
+                    <strong>{pren.ora}</strong>
+                    <p>Tavolo {tavoli.find(t => t._id === pren.tavoloId)?.numero}</p>
 
-              {prenotazioniInviate.includes(pren._id)
-                ? <p>✅ WhatsApp Inviato</p>
-                : <button onClick={(e) => { e.stopPropagation(); inviaWhatsApp(pren) }}>Conferma via WhatsApp</button>
-                }
-              </div>
-            ))}
-          </div>
-          </>
-        )} 
-      </div>    
+                {prenotazioniInviate.includes(pren._id)
+                  ? <p>✅ WhatsApp Inviato</p>
+                  : <button onClick={(e) => { e.stopPropagation(); inviaWhatsApp(pren) }}>Conferma via WhatsApp</button>
+                  }
+                </div>
+              ))}
+            </div>
+            </>
+          )} 
+        </div>    
 
       <section className='sala' style={{ backgroundImage: `url(${salaSfondo})` }}>
-        {tavoli.map((tavolo) => {
+        {tavoliSala.map((tavolo) => {
           const prenotazione = prenotazioniConfermate.find(p => p.tavoloId === tavolo._id)
           return (
           <TavoloCard
@@ -312,6 +333,7 @@ const inviaWhatsApp = (pren: Prenotazione) => {
             onAssign={handleAssegna}
             onMuovi={handleMuovi}
             evidenziato={tavolo._id === tavoloEvidenziato}
+            onLibera={handleLibera}
           />
           )
         })}
@@ -326,7 +348,7 @@ const inviaWhatsApp = (pren: Prenotazione) => {
             <FontAwesomeIcon icon={panelEdit ? faXmark : faPlus} />
           </button>
 
-          <div className='table-not-avaible'>{tavoli.length === 0 && <p>nessun tavolo disponibile, creane uno nuovo</p>}</div>
+          {/* <div className='table-not-avaible'>{tavoli.length === 0 && <p>nessun tavolo disponibile, creane uno nuovo</p>}</div> */}
           
         </div>
         {/* CAMBIO LAYOUT DELLA SALA E FORM PER L'AGGIUNTA DI UN NUOVO TAVOLO*/}
@@ -336,33 +358,40 @@ const inviaWhatsApp = (pren: Prenotazione) => {
             <div className='alg-status-span-table'>
               <div className='status-tavoli'>
                   <div className='alg-stats-totali'>
-                    <p>{tavoli.length}</p>
+                    <p>{tavoliSala.length}</p>
                     <p>Totali</p>
                   </div>
                   <div className='alg-stats-liberi'>
-                    <p>{tavoli.filter(t => t.stato === 'libero').length}</p>
+                    <p>{tavoliSala.filter(t => t.stato === 'libero').length}</p>
                     <p>Liberi</p>
                   </div>
                   <div className='alg-stats-occupati'>
-                    <p>{tavoli.filter(t => t.stato === 'occupato').length}</p>
+                    <p>{tavoliSala.filter(t => t.stato === 'occupato').length}</p>
                     <p>Occupati</p>
                   </div>
                 </div> 
             </div>
 
+
+      <div className='header-panel-edit'>
+            <button className="toggle-panel-edit" onClick={() => setGestioneAperta(!gestioneAperta)}>
+              <FontAwesomeIcon icon={gestioneAperta ? faXmark : faPlus} />
+            </button>
+              <h2>Modifica Sala</h2>
+          </div>
+
+          {gestioneAperta && (
+            <>
             <div className='path-element-panel-edit'>
-              <h3>Cambia il layout della sala</h3>
                 <select className='panel-edit' value={salaSfondo} onChange={(e) => setSalaSfondo(e.target.value)}>
                 {saleDisponibili.map((sala) => (
                   <option key={sala.img} value={sala.img}>{sala.nome}</option>
                 ))}
               </select>
             </div>
-        
-          <div className='alg-new-table-change-layout'>    
 
-                <div className='path-element-panel-edit'>
-                  <h3>Aggiungi un nuovo tavolo</h3>
+          <div className='alg-new-table-change-layout'>    
+              <div className='path-element-panel-edit'>              
                   <form className='panel-edit' onSubmit={handleSubmit}>
                     <label>Numero Del Tavolo
                       <input
@@ -389,8 +418,11 @@ const inviaWhatsApp = (pren: Prenotazione) => {
                 </form>
               </div>
             </div>
+          </>
+          )}
 
           <div className="pannello-prenotazioni">
+            <h2>Prenotazioni da gestire</h2>
               {prenotazioni.slice(0, 6).map((pren) => (
                 <div
                   key={pren._id}
@@ -398,8 +430,8 @@ const inviaWhatsApp = (pren: Prenotazione) => {
                   onClick={() => setPrenotazioneSelezionata(pren)}
                 >
                   <strong>{pren.nome}</strong>
-                  <p>{pren.persone} persone</p>
-                  <p>ore {pren.ora}</p>
+                  <strong>{pren.persone} persone</strong>
+                  <strong>ore {pren.ora}</strong>
 
                 </div>
             ))}

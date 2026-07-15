@@ -11,13 +11,16 @@ gestirne lo stato, assegnare le prenotazioni ai tavoli liberi e inviare al clien
 
 ## ✨ Funzionalità
 
-- **CRUD completo dei tavoli** — creazione, visualizzazione, modifica dello stato ed eliminazione.
+- **CRUD completo di tavoli e prenotazioni** — creazione, visualizzazione, modifica ed eliminazione, con i dati persistiti su MongoDB.
 - **Piantina dinamica della sala** — sfondi (piantine SVG disegnate in Figma) selezionabili da un menu, con i tavoli **trascinabili liberamente** e la posizione **salvata nel database**.
-- **Stati con codice colore** — 🟢 libero, 🔴 occupato, 🟡 riservato, aggiornabili al volo.
-- **Assegnazione prenotazioni** — dal pannello delle prenotazioni "da gestire", con un click si assegna una prenotazione a un tavolo libero (che diventa occupato).
-- **Pannello prenotazioni confermate** — cliccando una prenotazione confermata, il tavolo assegnato **si illumina** sulla piantina.
-- **Conferma via WhatsApp** — invio al cliente di un messaggio di conferma precompilato (link `wa.me`), con feedback "messaggio inviato".
-- **Layout responsive** — coordinate dei tavoli in percentuale, con layout adattato a desktop, tablet e mobile (media query per orientamento).
+- **Tavoli per sala** — ogni piantina ha i propri tavoli, con numerazione indipendente (indice composto `numero + sala`): si può avere "Tavolo 1" in ogni sala.
+- **Stati con codice colore** — 🟢 libero, 🔴 occupato, 🟡 riservato.
+- **Gestione prenotazioni** — pannello delle prenotazioni "da gestire"; con un click si **assegna** una prenotazione a un tavolo libero (che diventa occupato e mostra **nome + ora** del cliente).
+- **Pannello prenotazioni confermate** — mostra le prenotazioni assegnate con il relativo tavolo; cliccandone una, il tavolo **si illumina** sulla piantina.
+- **Conferma via WhatsApp** — invio al cliente di un messaggio precompilato (link `wa.me`), con feedback "messaggio inviato".
+- **Libera tavolo** — un pulsante libera un tavolo occupato e rimuove la relativa prenotazione.
+- **Interfaccia curata** — pannelli laterali collassabili, sezioni con titoli descrittivi, statistiche della sala aggiornate in tempo reale.
+- **Layout responsive** — coordinate dei tavoli in percentuale; layout adattato a desktop, tablet e mobile (media query anche per orientamento: la piantina resta visibile su telefono in orizzontale).
 
 ---
 
@@ -51,7 +54,7 @@ gestirne lo stato, assegnare le prenotazioni ai tavoli liberi e inviare al clien
 
 | Strumento | A cosa serve |
 |---|---|
-| **MongoDB** (Atlas) | Database NoSQL orientato ai documenti, ospitato in cloud su MongoDB Atlas. Conserva tavoli e relative posizioni. |
+| **MongoDB** (Atlas) | Database NoSQL orientato ai documenti, ospitato in cloud su MongoDB Atlas. Conserva **tavoli** (con posizione e sala di appartenenza) e **prenotazioni**. |
 
 ### Strumenti di sviluppo
 
