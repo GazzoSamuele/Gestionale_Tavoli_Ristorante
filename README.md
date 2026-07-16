@@ -7,9 +7,10 @@ gestirne lo stato, assegnare le prenotazioni ai tavoli liberi e inviare al clien
 
 ---
 
-<!-- ## 🔗 Demo live
+## 🔗 Demo live
 
-👉 **[Prova l'app online](INSERISCI-QUI-IL-LINK-VERCEL)** -->
+<a href="https://gestionale-tavoli-ristorante.vercel.app/">
+
 
 > ⏳ **Nota:** il backend è ospitato sul piano gratuito di Render, che va "in letargo" dopo circa 15 minuti di inattività.
 > La **prima apertura** può quindi richiedere 30-60 secondi per risvegliare il server: dopo, l'app torna reattiva.
