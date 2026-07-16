@@ -1,10 +1,24 @@
 import { useState, useEffect, useRef, type SubmitEvent, type PointerEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faXmark } from '@fortawesome/free-solid-svg-icons'
+import Calendar from 'react-calendar';
 
+import 'react-calendar/dist/Calendar.css'
 import './App.scss'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+
+const toYMD = (d: Date) => {
+  const anno = d.getFullYear()
+  const mese = String(d.getMonth() + 1).padStart(2, '0')
+  const giorno = String(d.getDate()).padStart(2, '0')
+  return `${anno}-${mese}-${giorno}`
+}
+
+const fromYMD = (s: string) => {
+  const [anno, mese, giorno] = s.split('-').map(Number)
+  return new Date(anno, mese - 1, giorno)
+}
 
 // INTERFACCIA TS PER LA VISUALIZZAZIONE DELL'UNITA' "PRENOTAZIONE"
 interface Prenotazione {
@@ -13,7 +27,9 @@ interface Prenotazione {
   persone: number;
   ora: string;
   telefono: string;
-  tavoloId?: string;
+  tavoloId?: string | null;
+  data?: string;
+  whatsappInviato?: boolean;
 }
 
 const saleDisponibili = [
@@ -23,13 +39,10 @@ const saleDisponibili = [
   { nome: 'layout sala 4', img: '/piantine-sale/piantina4.svg' },
 ]
 
-// INTERFACCIA TS PER LA VISUALIZZAZIONE DELL'UNITA' "TAVOLO"
 interface Tavolo {
   _id: string;
   numero: number;
   posti: number;
-  stato: 'libero' | 'occupato' | 'riservato';
-  oraArrivo?: string; 
 
   posX: number;
   posY: number;
@@ -39,8 +52,8 @@ interface Tavolo {
 
 interface TavoloCardProps {
   tavolo: Tavolo;
+  stato: 'libero' | 'occupato';
   onDelete: (id: string) => void;
-  // onUpdateStato: (id: string, nuovoStato: string) => void;
   onAssign: (tavolo: Tavolo) => void;
   onMuovi: (id: string, posX: number, posY: number) => void;
   evidenziato: boolean;
@@ -48,12 +61,10 @@ interface TavoloCardProps {
   onLibera: (tavolo: Tavolo) => void;
 }
 
-function TavoloCard({ tavolo, onDelete, onAssign, onMuovi, evidenziato, prenotazione, onLibera }: TavoloCardProps) {
+function TavoloCard({ tavolo, stato, onDelete, onAssign, onMuovi, evidenziato, prenotazione, onLibera }: TavoloCardProps) {
 
-  // la posizione attuale della carta (parte da quella salvata nel DB)
   const [pos, setPos] = useState({ x: tavolo.posX, y: tavolo.posY})
 
-  // "scatola" che ricorda da dove è partito il drag (non causa ridisegni)
   const dragStart = useRef({ mouseX: 0, mouseY: 0, posX: 0, posY: 0, dragging: false})
 
   const handlePointerDown = (e: PointerEvent<HTMLElement>) => 
@@ -66,7 +77,6 @@ function TavoloCard({ tavolo, onDelete, onAssign, onMuovi, evidenziato, prenotaz
         dragging: true
       }
 
-      // "aggancia" il puntatore alla maniglia
       e.currentTarget.setPointerCapture(e.pointerId)
   }
 
@@ -75,21 +85,17 @@ function TavoloCard({ tavolo, onDelete, onAssign, onMuovi, evidenziato, prenotaz
     if(!dragStart.current.dragging)
       return
 
-    // trova il contenitore sala
      const sala = e.currentTarget.closest('.sala')
       if (!sala) 
         return
 
-    // le sue dimensioni attuali in px 
       const rect = sala.getBoundingClientRect() 
 
-    // converti lo spostamento del mouse (px) in percentuale della sala
     const dxPct = (e.clientX - dragStart.current.mouseX) / rect.width * 100
 
     const dyPct = (e.clientY - dragStart.current.mouseY) / rect.height * 100
 
     setPos({ 
-      // nuova pos = origine + spostamento
       x: dragStart.current.posX + dxPct, 
       y: dragStart.current.posY + dyPct 
     })
@@ -105,9 +111,9 @@ function TavoloCard({ tavolo, onDelete, onAssign, onMuovi, evidenziato, prenotaz
   }
 
   return (
-    <div 
-      className={`tavolo-card tavolo-${tavolo.stato} ${evidenziato ? 'evidenziato' : ''}`} 
-      style={{ left: `${pos.x}%`, top: `${pos.y}%` }} 
+    <div
+      className={`tavolo-card tavolo-${stato} ${evidenziato ? 'evidenziato' : ''}`}
+      style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
       onClick={() => onAssign(tavolo)}>
          <h2
             onPointerDown={handlePointerDown}
@@ -119,7 +125,7 @@ function TavoloCard({ tavolo, onDelete, onAssign, onMuovi, evidenziato, prenotaz
             Tavolo {tavolo.numero}
         </h2>
     <div className="tavolo-info">
-      {tavolo.stato === 'occupato' && prenotazione && (
+      {stato === 'occupato' && prenotazione && (
         <>
           <p>{prenotazione.nome}</p>
           <p>{prenotazione.ora}</p>
@@ -128,12 +134,7 @@ function TavoloCard({ tavolo, onDelete, onAssign, onMuovi, evidenziato, prenotaz
       <p>{tavolo.posti} posti</p>
     </div>
 
-      {/* <select value={tavolo.stato} onClick={(e) => e.stopPropagation()} onChange={(e) => onUpdateStato(tavolo._id, e.target.value)}>
-        <option value="libero">Libero</option>
-        <option value="occupato">Occupato</option>
-        <option value="riservato">Riservato</option>
-      </select> */}
-      {tavolo.stato === 'occupato' && (
+      {stato === 'occupato' && (
           <button className='btn-libera-tavolo' onClick={(e) => { e.stopPropagation(); onLibera(tavolo) }}>Libera tavolo</button>
         )}
       <button className='btn-elimina-tavolo' onClick={(e) => { e.stopPropagation(); onDelete(tavolo._id) }}>Elimina</button>
@@ -156,11 +157,16 @@ function App() {
   const [panelEdit, setpanelEdit] = useState(false)
   const [panelReservations, setpanelReservations] = useState(false)
 
-  const [prenotazioniConfermate, setPrenotazioniConfermate] = useState<Prenotazione[]>([])
-
   const [tavoloEvidenziato, setTavoloEvidenziato] = useState<string | null>(null)
 
-  const [prenotazioniInviate, setPrenotazioniInviate] = useState<string[]>([])
+  const [dataSelezionata, setDataSelezionata] = useState(toYMD(new Date()))
+
+  const prenotazioniDelGiorno = prenotazioni.filter((p) => p.data === dataSelezionata)
+  const prenotazioniDaGestire = prenotazioniDelGiorno.filter((p) => !p.tavoloId)
+  const prenotazioniConfermate = prenotazioniDelGiorno.filter((p) => p.tavoloId)
+
+  const prenotazioneDelTavolo = (tavoloId: string) =>
+    prenotazioniConfermate.find((p) => p.tavoloId === tavoloId)
 
   useEffect(() => {
   fetch(`${API_URL}/api/tavoli`)
@@ -170,7 +176,7 @@ function App() {
 }, [])
 
   useEffect(() => {
-  fetch('http://localhost:3000/api/prenotazioni')
+  fetch(`${API_URL}/api/prenotazioni`)
     .then(res => res.json())
     .then(data => setPrenotazioni(data))
     .catch(err => console.error(err))
@@ -211,39 +217,29 @@ const handleDelete = async (id: string) => {
     setTavoli(tavoli.filter((tavolo) => tavolo._id !== id))
 }
 
-// MODIFICA
-const handleUpdate = async (id: string, nuovoStato: string) => {
-  const res = await fetch(`${API_URL}/api/tavoli/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json'},
-    body: JSON.stringify({ stato: nuovoStato })
-  })
-  if (!res.ok) {
-    alert('Errore nella modifica')
-    return
-  }
-  const aggiornamentoTavolo = await res.json()
-  setTavoli(tavoli.map((t) => (t._id === id ? aggiornamentoTavolo : t)))
-}
-
 // SEZIONE PRENOTAZIONI
 
+const aggiornaPrenotazione = async (id: string, campi: Partial<Prenotazione>) => {
+  const res = await fetch(`${API_URL}/api/prenotazioni/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(campi)
+  })
+  if (!res.ok) {
+    alert('Errore nel salvataggio della prenotazione')
+    return null
+  }
+  const aggiornata: Prenotazione = await res.json()
+  setPrenotazioni((prec) => prec.map((p) => (p._id === aggiornata._id ? aggiornata : p)))
+  return aggiornata
+}
+
 // ASSEGNAZIONE DELLA PRENOTAZIONE AL TAVOLO
-const handleAssegna = (tavolo: Tavolo) => {
-  // nessuna prenotazione scelta → non fare niente
-  if(!prenotazioneSelezionata) 
+const handleAssegna = async (tavolo: Tavolo) => {
+  if(!prenotazioneSelezionata)
     return
+  await aggiornaPrenotazione(prenotazioneSelezionata._id, { tavoloId: tavolo._id })
 
-  // il tavolo diventa occupato (riusa la funzione PUT usata nella parte dei tavoli)
-  handleUpdate(tavolo._id, 'occupato')
-
-  // togli la prenotazione assegnata
-  setPrenotazioni(prenotazioni.filter((p) => p._id !== prenotazioneSelezionata._id))
-
-  // spostamento delle prenotazioni confermate
-  setPrenotazioniConfermate([...prenotazioniConfermate, {...prenotazioneSelezionata, tavoloId: tavolo._id }])
-
-   // deseleziona
   setPrenotazioneSelezionata(null)
 }
 
@@ -260,29 +256,29 @@ const handleMuovi =  async (id: string, posX: number, posY: number) => {
 
 // LIBERA IL TAVOLO DALLA PRENOTAZIONE ESISTENTE
 
-const handleLibera = (tavolo: Tavolo) => {
-  handleUpdate(tavolo._id, 'libero')  
-  setPrenotazioniConfermate(prenotazioniConfermate.filter(p => p.tavoloId !== tavolo._id))  
+const handleLibera = async (tavolo: Tavolo) => {
+  const pren = prenotazioneDelTavolo(tavolo._id)
+  if (pren)
+    await aggiornaPrenotazione(pren._id, { tavoloId: null })
 }
 
 // FUNZIONE CHE INVIA IL MESSAGGIO SU WHATSAPP ALLA PRENOTAZIONE CONFERMATA
 
-const inviaWhatsApp = (pren: Prenotazione) => {
+const inviaWhatsApp = async (pren: Prenotazione) => {
   const messaggio = `Ciao ${pren.nome}! 🍽️ La tua prenotazione per ${pren.persone} persone alle ${pren.ora} è confermata. Ti aspettiamo!`
 
-  const url = 
-  // "codifica" il messaggio per l'URL senza spazi, emoji o accenti
+  const url =
   `https://wa.me/${pren.telefono}?text=${encodeURIComponent(messaggio)}`
-  
-  window.open(url, '_blank')
 
-  // MESSAGGIO NELLE PRENOTAZIONI CONFERMATE CHE INDICA L'INVIO DEL MESSAGGIO SU WHATSAPP AL CLIENTE
-  setPrenotazioniInviate([...prenotazioniInviate, pren._id])
+  window.open(url, '_blank')
+  await aggiornaPrenotazione(pren._id, { whatsappInviato: true })
 }
 
 // GESTIONE TAVOLI PRESENTI IN OGNI SALA
 
 const tavoliSala = tavoli.filter(t => t.sala === salaSfondo)
+
+const tavoliOccupati = tavoliSala.filter(t => prenotazioneDelTavolo(t._id))
   return (
     <>
     <main className='layout-sala'>
@@ -294,10 +290,18 @@ const tavoliSala = tavoli.filter(t => t.sala === salaSfondo)
             <FontAwesomeIcon icon={panelReservations ? faXmark : faPlus} />
           </button>
           <h2>Prenotazioni confermate</h2>
+          <p className='data-header'>
+            {fromYMD(dataSelezionata).toLocaleDateString('it-IT', {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric'
+            })}
+          </p>
         </div>
-        {panelReservations && (
-          <>
-          <div>
+        <div className={`collapsible ${panelReservations ? 'is-open' : ''}`}>
+          <div className="collapsible-inner">
+          <div className='all-prenotazioni-confermate'>
               {prenotazioniConfermate.slice(0, 4).map((pren) => (
                 <div
                   key={pren._id}
@@ -309,27 +313,27 @@ const tavoliSala = tavoli.filter(t => t.sala === salaSfondo)
                     <strong>{pren.ora}</strong>
                     <p>Tavolo {tavoli.find(t => t._id === pren.tavoloId)?.numero}</p>
 
-                {prenotazioniInviate.includes(pren._id)
+                {pren.whatsappInviato
                   ? <p>✅ WhatsApp Inviato</p>
                   : <button onClick={(e) => { e.stopPropagation(); inviaWhatsApp(pren) }}>Conferma via WhatsApp</button>
                   }
                 </div>
               ))}
             </div>
-            </>
-          )} 
-        </div>    
+            </div>
+          </div>
+        </div>
 
       <section className='sala' style={{ backgroundImage: `url(${salaSfondo})` }}>
         {tavoliSala.map((tavolo) => {
-          const prenotazione = prenotazioniConfermate.find(p => p.tavoloId === tavolo._id)
+          const prenotazione = prenotazioneDelTavolo(tavolo._id)
           return (
           <TavoloCard
             key={tavolo._id}
             tavolo={tavolo}
+            stato={prenotazione ? 'occupato' : 'libero'}
             prenotazione={prenotazione}
             onDelete={handleDelete}
-            // onUpdateStato={handleUpdate}
             onAssign={handleAssegna}
             onMuovi={handleMuovi}
             evidenziato={tavolo._id === tavoloEvidenziato}
@@ -340,10 +344,11 @@ const tavoliSala = tavoli.filter(t => t.sala === salaSfondo)
       </section>
     </div>
 
-      <section className='panels'>
+      <section className={`panels ${panelEdit ? 'aperto' : ''}`}>
     {/* PANNELLO DI EDIT GENERALE */}
       <aside>
           <div className='btn-close-alert-tables'>
+            <h2>Pannello Modifica</h2>
             <button className="toggle-panel-edit" onClick={() => setpanelEdit(!panelEdit)}>
             <FontAwesomeIcon icon={panelEdit ? faXmark : faPlus} />
           </button>
@@ -352,8 +357,7 @@ const tavoliSala = tavoli.filter(t => t.sala === salaSfondo)
           
         </div>
         {/* CAMBIO LAYOUT DELLA SALA E FORM PER L'AGGIUNTA DI UN NUOVO TAVOLO*/}
-        {panelEdit && (
-          <> 
+        <div className="panels-contenuto">
           <section className='stato-tavoli-panels'>
             <div className='alg-status-span-table'>
               <div className='status-tavoli'>
@@ -362,16 +366,15 @@ const tavoliSala = tavoli.filter(t => t.sala === salaSfondo)
                     <p>Totali</p>
                   </div>
                   <div className='alg-stats-liberi'>
-                    <p>{tavoliSala.filter(t => t.stato === 'libero').length}</p>
+                    <p>{tavoliSala.length - tavoliOccupati.length}</p>
                     <p>Liberi</p>
                   </div>
                   <div className='alg-stats-occupati'>
-                    <p>{tavoliSala.filter(t => t.stato === 'occupato').length}</p>
+                    <p>{tavoliOccupati.length}</p>
                     <p>Occupati</p>
                   </div>
-                </div> 
+                </div>
             </div>
-
 
       <div className='header-panel-edit'>
             <button className="toggle-panel-edit" onClick={() => setGestioneAperta(!gestioneAperta)}>
@@ -380,9 +383,10 @@ const tavoliSala = tavoli.filter(t => t.sala === salaSfondo)
               <h2>Modifica Sala</h2>
           </div>
 
-          {gestioneAperta && (
-            <>
+          <div className={`collapsible ${gestioneAperta ? 'is-open' : ''}`}>
+            <div className="collapsible-inner">
             <div className='path-element-panel-edit'>
+              <label>Seleziona la sala</label>
                 <select className='panel-edit' value={salaSfondo} onChange={(e) => setSalaSfondo(e.target.value)}>
                 {saleDisponibili.map((sala) => (
                   <option key={sala.img} value={sala.img}>{sala.nome}</option>
@@ -418,12 +422,12 @@ const tavoliSala = tavoli.filter(t => t.sala === salaSfondo)
                 </form>
               </div>
             </div>
-          </>
-          )}
+            </div>
+          </div>
 
           <div className="pannello-prenotazioni">
             <h2>Prenotazioni da gestire</h2>
-              {prenotazioni.slice(0, 6).map((pren) => (
+              {prenotazioniDaGestire.slice(0, 6).map((pren) => (
                 <div
                   key={pren._id}
                   className={`prenotazione-card ${prenotazioneSelezionata?._id === pren._id ? 'selezionata' : ''}`}
@@ -436,10 +440,26 @@ const tavoliSala = tavoli.filter(t => t.sala === salaSfondo)
                 </div>
             ))}
           </div>
+
+          <div className='path-element-panel-edit calendario-prenotazioni'>
+            <h3>Giorno</h3>
+            <Calendar
+              locale='it-IT'
+              value={fromYMD(dataSelezionata)}
+              onChange={(valore) => {
+                if (valore instanceof Date)
+                  setDataSelezionata(toYMD(valore))
+              }}
+              tileContent={({ date, view }) =>
+                view === 'month' && prenotazioni.some((p) => p.data === toYMD(date))
+                  ? <span className='pallino-prenotazioni' />
+                  : null
+              }
+            />
+          </div>
           </section>
-          </>
-        )} 
-      </aside>     
+        </div>
+      </aside>
       </section>
     </main>
     </>

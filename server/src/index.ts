@@ -29,7 +29,7 @@ app.use('/api/tavoli', tavoliRouter)
 app.use('/api/prenotazioni', prenotazioniRouter)
 
 // Render (e ogni hosting) assegna la porta tramite process.env.PORT. Con || 3000, in locale usa 3000, online usa quella di Render.
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.get('/', (req, res) => {    
   res.send('benvenuti sul mio gestionale di tavoli')

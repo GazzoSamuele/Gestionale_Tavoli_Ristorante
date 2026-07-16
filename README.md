@@ -5,7 +5,20 @@ Offre una **piantina interattiva della sala** su cui disporre liberamente i tavo
 gestirne lo stato, assegnare le prenotazioni ai tavoli liberi e inviare al cliente una
 **conferma via WhatsApp**.
 
-> Progetto realizzato interamente in TypeScript (frontend + backend) come esercizio full-stack.
+---
+
+<!-- ## 🔗 Demo live
+
+👉 **[Prova l'app online](INSERISCI-QUI-IL-LINK-VERCEL)** -->
+
+> ⏳ **Nota:** il backend è ospitato sul piano gratuito di Render, che va "in letargo" dopo circa 15 minuti di inattività.
+> La **prima apertura** può quindi richiedere 30-60 secondi per risvegliare il server: dopo, l'app torna reattiva.
+
+---
+
+## 📸 Screenshot
+
+<img src="client/img/screen-dashboard.png" alt="Dashboard completa con tutte le funzionalità" width="800">
 
 ---
 
@@ -115,7 +128,7 @@ Avvia il server:
 ```bash
 npm run dev
 ```
-> Il backend parte su `http://localhost:3000`.
+> Il backend parte su `http://localhost:3001`.
 
 ### 3. Frontend
 In un secondo terminale:

@@ -5,9 +5,11 @@ interface IPrenotazione {
     persone: number;
     ora: string;
     telefono: string;
-    // il ? rende il valore opzionale
     note?: string;
     stato: 'Confermato' | 'Richiesta Conferma';
+    tavoloId?: mongoose.Types.ObjectId | null;
+    data?: string;
+    whatsappInviato: boolean;
 }
 
 const prenotazioneSchema = new mongoose.Schema<IPrenotazione>({
@@ -22,6 +24,13 @@ const prenotazioneSchema = new mongoose.Schema<IPrenotazione>({
         default: 'Richiesta Conferma',
         required: true
     },
+    tavoloId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tavolo',
+        default: null
+    },
+    data: { type: String },
+    whatsappInviato: { type: Boolean, default: false },
 });
 
 const Prenotazione = mongoose.model<IPrenotazione>('Prenotazione', prenotazioneSchema);
