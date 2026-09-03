@@ -9,7 +9,7 @@ gestirne lo stato, assegnare le prenotazioni ai tavoli liberi e inviare al clien
 
 ## 🔗 Demo live
 
-<a href="https://gestionale-tavoli-ristorante.vercel.app/">
+<a href="https://gestionale-tavoli-ristorante.vercel.app/">🚀 Prova l'app</a>
 
 ---
 
