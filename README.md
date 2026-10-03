@@ -90,6 +90,7 @@ App_Gestione_Tavoli_Ristorante/
 └── server/                 # Backend – Express + TypeScript
     └── src/
         ├── index.ts        # Avvio server + connessione MongoDB
+        ├── demo.ts         # npm run demo: prenotazioni di esempio
         ├── models/
         │   ├── Tavolo.ts        # Schema/Model Mongoose del tavolo
         │   └── Prenotazione.ts  # Schema/Model Mongoose della prenotazione
@@ -135,6 +136,22 @@ npm install
 npm run dev
 ```
 > Il frontend parte su `http://localhost:5173`.
+
+### 4. Prenotazioni di esempio (facoltativo)
+Per avere qualcosa da mostrare nella demo, dalla cartella `server`:
+```bash
+npm run demo
+```
+Crea le prenotazioni di oggi e dei 6 giorni successivi: ogni giorno 3 confermate (con un tavolo
+della sala 1) e 2 da gestire. Prima toglie quelle create dal lancio precedente, che si
+riconoscono dal telefono finto `3900000000…`, quindi si può rilanciare quando le date sono
+passate senza creare doppioni. Le altre prenotazioni non vengono toccate.
+
+Di default lavora sul backend pubblicato; per usare quello locale:
+```bash
+API_URL=http://localhost:3001 npm run demo
+```
+(in PowerShell: `$env:API_URL = "http://localhost:3001"; npm run demo`)
 
 ---
 
