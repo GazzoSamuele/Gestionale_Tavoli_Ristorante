@@ -314,7 +314,7 @@ const tavoliOccupati = tavoliSala.filter(t => prenotazioneDelTavolo(t._id))
                     <p>Tavolo {tavoli.find(t => t._id === pren.tavoloId)?.numero}</p>
 
                 {pren.whatsappInviato
-                  ? <p>✅ WhatsApp Inviato</p>
+                  ? <p className="whatsapp-inviato">✅ WhatsApp Inviato</p>
                   : <button onClick={(e) => { e.stopPropagation(); inviaWhatsApp(pren) }}>Conferma via WhatsApp</button>
                   }
                 </div>

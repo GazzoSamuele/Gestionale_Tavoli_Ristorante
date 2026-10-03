@@ -143,10 +143,24 @@ body {
   display: grid;
   width: auto;
   justify-items: center;
+  gap: 10px;
 
-    .tavolo-info{
-      flex-direction: row;
+  .tavolo-info {
+    flex-direction: row;
+    gap: 4px 10px;
+    padding: 0 10px;
+
+    p {
+      margin-top: 8px;
+      padding: 0;
+      font-size: 13px;
+      text-align: center;
     }
+
+    p:first-child {
+      max-width: 10em;
+    }
+  }
 }
 
 .btn-libera-tavolo {
@@ -419,6 +433,11 @@ aside {
     text-align: center;
     border-radius: 10px;
     font-weight: 700;
+  }
+  .whatsapp-inviato {
+    width: auto;
+    padding: 6px 12px;
+    font-size: 0.8rem;
   }
   button {
     padding: 11px;
