@@ -87,11 +87,11 @@ body {
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
   transition: box-shadow 0.2s;
   align-items: center;
-  gap: $gap;
+  gap: 6px;
 
   h2 {
     margin: 0;
-    padding: 10px 14px;
+    padding: 8px 12px;
     font-size: 20px;
     font-weight: 600;
     line-height: 1;
@@ -101,11 +101,24 @@ body {
 
   p {
     margin: 10px 0 0;
-    padding: 0 14px;
-    font-size: 20px;
+    padding: 0;
+    font-size: 13px;
     font-weight: 600;
     color: #8a7962;
     text-transform: uppercase;
+  }
+
+  .tavolo-info p {
+    max-width: 100%;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tavolo-info-nome {
+    color: $espresso;
+    font-weight: 700;
   }
 
   &.tavolo-libero h2 {
@@ -135,40 +148,23 @@ body {
 .tavolo-info {
   display: flex;
   flex-direction: column;
-  gap: 6px 12px;
+  gap: 4px;
   align-items: center;
+  width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
-.tavolo-occupato {
-  display: grid;
-  width: auto;
-  justify-items: center;
-  gap: 10px;
-
-  .tavolo-info {
-    flex-direction: row;
-    gap: 4px 10px;
-    padding: 0 10px;
-
-    p {
-      margin-top: 8px;
-      padding: 0;
-      font-size: 13px;
-      text-align: center;
-    }
-
-    p:first-child {
-      max-width: 10em;
-    }
-  }
+.btn-segnaposto {
+  visibility: hidden;
 }
 
 .btn-libera-tavolo {
   align-self: flex-start;
-  padding: 10px;
+  padding: 7px;
   background: $giallo;
   border: none;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   color: white;
@@ -179,10 +175,10 @@ body {
 
 .btn-elimina-tavolo {
   align-self: flex-start;
-  padding: 10px;
+  padding: 7px;
   background: $rosso;
   border: none;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   color: white;
@@ -425,29 +421,36 @@ aside {
   }
   p {
     font-size: 1.2rem;
-    background-color: $rosso;
+    background-color: $espresso;
     color: $cream-card;
     margin: 0;
     padding: 10px;
-    width: 90%;
+    width: 100%;
+    box-sizing: border-box;
     text-align: center;
     border-radius: 10px;
     font-weight: 700;
   }
-  .whatsapp-inviato {
-    width: auto;
-    padding: 6px 12px;
-    font-size: 0.8rem;
-  }
+  .whatsapp-inviato,
   button {
+    width: 100%;
+    min-width: 11.75rem;
+    box-sizing: border-box;
     padding: 11px;
     border: none;
     border-radius: 10px;
-    background-color: $verde;
     color: #fff;
-    font-family: "Manrope", sans-serif;
+    font-family: $sans;
     font-weight: 700;
     font-size: 14px;
+    line-height: 1.2;
+    text-align: center;
+  }
+  .whatsapp-inviato {
+    background-color: $verde;
+  }
+  button {
+    background-color: $rosso;
     cursor: pointer;
     transition: opacity 0.2s;
   }
@@ -705,44 +708,6 @@ button {
   background: #fff;
 }
 
-/* ---------- CARD PRENOTAZIONI CONFERMATE ---------- */
-.panel-prenotazioni-confermate .prenotazioni-only-whatsapp > div {
-  padding: 14px;
-  border-radius: $radius;
-  background: $cream-card;
-  box-shadow: 0 4px 12px rgba(59, 36, 24, 0.1);
-
-  strong {
-    font-family: $serif;
-    font-size: 19px;
-    font-weight: 600;
-    color: $espresso;
-  }
-
-  p {
-    margin: 3px 0 12px;
-    font-size: 13px;
-    color: $muted;
-    font-weight: 500;
-  }
-
-  // pulsante WhatsApp
-  button {
-    width: 100%;
-    background-color: #25d366;
-    color: #fff;
-  }
-  // messaggio "WhatsApp inviato"
-  > p:last-child {
-    margin: 0;
-    padding: 10px;
-    border-radius: 10px;
-    background: rgba(37, 211, 102, 0.12);
-    color: #1a8f47;
-    font-weight: 700;
-  }
-}
-
 @media (max-width: 1925px) {
   .panels {
     --panels-open: 520px;
@@ -752,9 +717,6 @@ button {
     width: 10.5%;
     h2 {
       font-size: 19px;
-    }
-    p {
-      font-size: 18px;
     }
   }
 }
@@ -769,9 +731,6 @@ button {
     h2 {
       font-size: 18px;
       padding: 9px 12px;
-    }
-    p {
-      font-size: 16px;
     }
   }
 }
@@ -790,12 +749,8 @@ button {
 
   .tavolo-card {
     width: 12.5%;
-    gap: 12px;
     h2 {
       font-size: 17px;
-    }
-    p {
-      font-size: 15px;
     }
   }
 
@@ -827,7 +782,7 @@ button {
 
   .tavolo-card {
     width: 14%;
-    gap: 10px;
+    gap: 6px;
     h2 {
       font-size: 15px;
       padding: 8px 10px;
@@ -840,8 +795,8 @@ button {
 
   .btn-libera-tavolo,
   .btn-elimina-tavolo {
-    padding: 8px;
-    font-size: 13px;
+    padding: 6px;
+    font-size: 12px;
   }
 
   .status-tavoli {
@@ -895,16 +850,21 @@ button {
   }
 
   .tavolo-card {
-    width: 10%;
-      p{
-        padding: 0px;
-      }
+    width: 15%;
+    gap: 4px;
+    h2 {
+      padding: 6px 8px;
+    }
   }
 
-  .tavolo-occupato{
-    width: 18%;
-    height: 22%;
-    gap: 6px;
+  .btn-libera-tavolo,
+  .btn-elimina-tavolo {
+    padding: 5px;
+    font-size: 11px;
+  }
+
+  .testo-lungo {
+    display: none;
   }
 
   .status-tavoli {
@@ -1026,10 +986,21 @@ button {
     gap: 8px;
     h2 {
       font-size: 15px;
+      padding: 8px 10px;
     }
     p {
       font-size: 13px;
     }
+  }
+
+  .btn-libera-tavolo,
+  .btn-elimina-tavolo {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  .testo-lungo {
+    display: inline;
   }
 }
 
@@ -1088,8 +1059,11 @@ button {
       width: 100%;
       box-sizing: border-box;
     }
+    .whatsapp-inviato,
     button {
       width: 100%;
+      min-width: 0;
+      font-size: 13px;
     }
   }
 

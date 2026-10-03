@@ -125,17 +125,23 @@ function TavoloCard({ tavolo, stato, onDelete, onAssign, onMuovi, evidenziato, p
             Tavolo {tavolo.numero}
         </h2>
     <div className="tavolo-info">
-      {stato === 'occupato' && prenotazione && (
+      {stato === 'occupato' && prenotazione ? (
         <>
-          <p>{prenotazione.nome}</p>
-          <p>{prenotazione.ora}</p>
+          <p className="tavolo-info-nome" title={prenotazione.nome}>{prenotazione.nome}</p>
+          <p>{prenotazione.ora} · {tavolo.posti} posti</p>
+        </>
+      ) : (
+        <>
+          <p className="tavolo-info-nome">Libero</p>
+          <p>{tavolo.posti} posti</p>
         </>
       )}
-      <p>{tavolo.posti} posti</p>
     </div>
 
-      {stato === 'occupato' && (
-          <button className='btn-libera-tavolo' onClick={(e) => { e.stopPropagation(); onLibera(tavolo) }}>Libera tavolo</button>
+      {stato === 'occupato' ? (
+          <button className='btn-libera-tavolo' onClick={(e) => { e.stopPropagation(); onLibera(tavolo) }}>Libera<span className="testo-lungo"> tavolo</span></button>
+        ) : (
+          <button className='btn-libera-tavolo btn-segnaposto' aria-hidden="true" tabIndex={-1}>Libera<span className="testo-lungo"> tavolo</span></button>
         )}
       <button className='btn-elimina-tavolo' onClick={(e) => { e.stopPropagation(); onDelete(tavolo._id) }}>Elimina</button>
     </div>
