@@ -296,6 +296,9 @@ const tavoliOccupati = tavoliSala.filter(t => prenotazioneDelTavolo(t._id))
             <FontAwesomeIcon icon={panelReservations ? faXmark : faPlus} />
           </button>
           <h2>Prenotazioni confermate</h2>
+          <p className='avviso-demo'>
+            Demo con dati inventati · <a href="/privacy.html">Privacy</a>
+          </p>
           <p className='data-header'>
             {fromYMD(dataSelezionata).toLocaleDateString('it-IT', {
               weekday: 'long',

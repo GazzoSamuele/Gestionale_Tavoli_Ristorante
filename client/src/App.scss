@@ -17,7 +17,7 @@ $gap: 18px;
 $padding: 22px;
 
 $serif: "Cormorant Garamond", serif;
-$sans: "Manrope", sans-serif;
+$sans: "Manrope Variable", "Manrope", sans-serif;
 
 /* ---------- BASE ---------- */
 body {
@@ -387,8 +387,21 @@ aside {
     font-size: 1.3rem;
   }
 
+  .avviso-demo {
+    margin: 0 0 0 auto;
+    color: $cream;
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.85;
+    white-space: nowrap;
+
+    a {
+      color: inherit;
+    }
+  }
+
   .data-header {
-    margin: 0 0 0 auto; 
+    margin: 0;
     padding: 8px 16px;
     border-radius: 999px;
     background: $sage;
@@ -558,7 +571,7 @@ select.panel-edit {
   padding: 10px 12px;
   border: 1.5px solid #d9c9ab;
   border-radius: 10px;
-  font-family: "Manrope", sans-serif;
+  font-family: $sans;
   font-size: 12px;
   font-weight: 600;
   color: #43291a;
@@ -1070,6 +1083,17 @@ button {
   .header-prenotazioni-confermate h2,
   .pannello-prenotazioni h2 {
     font-size: 1rem;
+  }
+
+  .header-prenotazioni-confermate {
+    flex-wrap: wrap;
+    row-gap: 6px;
+
+    .avviso-demo {
+      order: 3;
+      width: 100%;
+      margin: 0;
+    }
   }
 
   .status-tavoli {
